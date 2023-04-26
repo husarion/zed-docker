@@ -1,9 +1,4 @@
-ARG IMAGE = cuda11.7-ubuntu20.04
-FROM stereolabs/zed:3.8-devel-$ENV
-FROM if [ "$ENV" = "amd" ] ;\
-        stereolabs/zed:3.8-devel-cuda11.7-ubuntu20.04 ;\
-    else stereolabs/zed:3.8-devel-jetson-jp5.0.2 ; fi
-
+FROM stereolabs/zed:3.8-devel-cuda11.7-ubuntu20.04
 
 SHELL ["/bin/bash", "-c"]
 
@@ -16,24 +11,28 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.
 # ROS install
 RUN apt-get update -y && \ 
     apt-get install -y --no-install-recommends \
-    ros-$ROS_DISTRO-ros-core=1.5.0-1* \
-    && rm -rf /var/lib/apt/lists/*
+    ros-$ROS_DISTRO-ros-core=1.5.0-1* && \
+    rm -rf /var/lib/apt/lists/*
 
 # ZED setup
 WORKDIR /ros_ws
-RUN apt-get update -y && apt-get upgrade -y && \
+RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
         build-essential \
         git \
         python3-pip && \
-    pip3 install \
-        rosdep && \
-    git clone --recursive -b v3.7.x https://github.com/stereolabs/zed-ros-wrapper src/zed-ros-wrapper && \
+        pip3 install \
+        rosdep
+
+RUN apt-get update -y && \
+    git clone --recursive -b v3.8.x https://github.com/stereolabs/zed-ros-wrapper src/zed-ros-wrapper && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
     rosdep init && \
     rosdep update --rosdistro $ROS_DISTRO && \
-    rosdep install --from-paths src -y -i && \
-    catkin_make -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs -DCMAKE_CXX_FLAGS="-Wl,--allow-shlib-undefined" -DCMAKE_BUILD_TYPE=Release && \
+    rosdep install --from-paths src -y -i
+    
+RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
+    catkin_make -DCMAKE_BUILD_TYPE=Release && \
     rm -rf /var/lib/apt/lists/*
 
 # setup entrypoint
