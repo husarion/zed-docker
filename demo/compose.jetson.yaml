@@ -2,7 +2,7 @@ services:
         
   zed:
     build:
-      dockerfile: ./Dockerfile.zed
+      dockerfile: ./Dockerfile.zed_jetson
     container_name: zed
     network_mode: host
     runtime: nvidia
