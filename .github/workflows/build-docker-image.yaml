@@ -49,7 +49,7 @@ jobs:
       run: docker build . --file Dockerfile.zed --tag zed:$(date +%s)
 
     - name: Build the ZED Jetson Docker image
-      run: docker build . --file Dockerfile.zed --tag zed:$(date +%s)
+      run: docker build . --file Dockerfile.zed_jetson --tag zed:$(date +%s)
 
     - name: Docker Push
       run: docker push ${{secrets.DOCKER_USER}}/husarion
