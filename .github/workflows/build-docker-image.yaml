@@ -19,7 +19,6 @@ on:
         options:
           - Dockerfile.zed
           - Dockerfile.zed_jetson
-            dockerfile:
       platform: "Select Platform"
         required: true
         default: 'linux/amd64'
