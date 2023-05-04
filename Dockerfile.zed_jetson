@@ -39,7 +39,9 @@ RUN apt-get update -y && \
 RUN apt-get update -y && \
     git clone --recursive -b v${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}.x https://github.com/stereolabs/zed-ros-wrapper src/zed-ros-wrapper && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
-    rosdep install --from-paths src -y -i && \
+    rosdep install --from-paths src -y -i
+
+RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
     catkin_make -DCMAKE_BUILD_TYPE=Release && \
     rm -rf /var/lib/apt/lists/*
 
