@@ -11,26 +11,14 @@ on:
         options:
           - development
           - stable
-      dockerfile:
-        description: "Select Dockerfile"
+      platform:
+        description: "Select Platform"
         required: true
-        default: 'Dockerfile.zed'
+        default: 'Desktop'
         type: choice
         options:
-          - Dockerfile.zed
-          - Dockerfile.zed_jetson
-            dockerfile:
-      platform: "Select Platform"
-        required: true
-        default: 'linux/amd64'
-        type: choice
-        options:
-          - linux/amd64
-          - linux/arm64
-      target_distro:
-        description: "In case of \"stable\" release specify the ROS distro of the existing docker image (eg. humble)"
-        type: string
-        default: "ardent"
+          - Desktop
+          - Jetson
       target_release:
         description: "In case of \"stable\" release specify the version of the existing docker image (eg. 1.0.12)"
         type: string
@@ -38,13 +26,7 @@ on:
       target_date:
         description: "In case of \"stable\" release specify the date of the existing docker image in format YYYYMMDD (eg. 20220124)"
         type: string
-        default: "20131206"
-  repository_dispatch:
-    types: [rebuild]
-  pull_request:
-    types:
-      - closed
-      - opened
+        default: "20220124"
 
 jobs:
   build:
@@ -57,17 +39,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build Docker Image
+      - name: Build Docker Image on Desktop
+        if: inputs.platform == 'Desktop'
         uses: husarion-ci/ros-docker-img-action@v0.4
         with:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
-          main_branch_name: ros
-          dockerfile: ${{ inputs.dockerfile }}
+          main_branch_name: main
           build_type: ${{ inputs.build_type }}
+          dockerfile: Dockerfile.zed
+          platforms: linux/amd64
           ros_distro: noetic
-          platforms: ${{ inputs.build_type }}
           # variables important only for stable release
-          target_distro: ${{ inputs.target_distro }}
+          target_distro: noetic
+          target_release: ${{ inputs.target_release }}
+          target_date: ${{ inputs.target_date }}
+
+      - name: Build Docker Image on Jetson
+        if: inputs.platform == 'Jetson'
+        uses: husarion-ci/ros-docker-img-action@v0.4
+        with:
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
+          main_branch_name: main
+          build_type: ${{ inputs.build_type }}
+          dockerfile: Dockerfile.zed_jetson
+          platforms: linux/amd64
+          ros_distro: noetic
+          # variables important only for stable release
+          target_distro: noetic
           target_release: ${{ inputs.target_release }}
           target_date: ${{ inputs.target_date }}
