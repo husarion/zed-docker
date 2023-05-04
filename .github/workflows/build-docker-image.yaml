@@ -19,7 +19,8 @@ on:
         options:
           - Dockerfile.zed
           - Dockerfile.zed_jetson
-      platform: "Select Platform"
+      platform:
+        description: "Select Platform"
         required: true
         default: 'linux/amd64'
         type: choice
@@ -38,12 +39,6 @@ on:
         description: "In case of \"stable\" release specify the date of the existing docker image in format YYYYMMDD (eg. 20220124)"
         type: string
         default: "20131206"
-  repository_dispatch:
-    types: [rebuild]
-  pull_request:
-    types:
-      - closed
-      - opened
 
 jobs:
   build:
