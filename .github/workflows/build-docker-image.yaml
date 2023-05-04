@@ -11,22 +11,14 @@ on:
         options:
           - development
           - stable
-      dockerfile:
-        description: "Select Dockerfile"
-        required: true
-        default: 'Dockerfile.zed'
-        type: choice
-        options:
-          - Dockerfile.zed
-          - Dockerfile.zed_jetson
       platform:
-        description: "Select Platform"
+        description: "Select Platform (image, architecture, ROS distribution)"
         required: true
-        default: 'linux/amd64'
+        default: [Dockerfile.zed, linux/amd64, noetic]
         type: choice
         options:
-          - linux/amd64
-          - linux/arm64
+          - [Dockerfile.zed, linux/amd64, noetic]
+          - [Dockerfile.zed_jetson, linux/arm64, melodic]
       target_distro:
         description: "In case of \"stable\" release specify the ROS distro of the existing docker image (eg. humble)"
         type: string
@@ -57,10 +49,10 @@ jobs:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
           main_branch_name: ros
-          dockerfile: ${{ inputs.dockerfile }}
           build_type: ${{ inputs.build_type }}
-          ros_distro: noetic
-          platforms: ${{ inputs.build_type }}
+          dockerfile: ${{ inputs.platform[0] }}
+          platforms: ${{ inputs.platform[1] }}
+          ros_distro: ${{ inputs.platform[2] }}
           # variables important only for stable release
           target_distro: ${{ inputs.target_distro }}
           target_release: ${{ inputs.target_release }}
