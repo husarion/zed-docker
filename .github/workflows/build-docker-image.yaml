@@ -14,7 +14,7 @@ on:
       platform:
         description: "Select Platform (image, architecture, ROS distribution)"
         required: true
-        default: [Dockerfile.zed, linux/amd64, noetic]
+        default: 'Dockerfile.zed, linux/amd64, noetic'
         type: choice
         options:
           - [Dockerfile.zed, linux/amd64, noetic]
@@ -30,7 +30,7 @@ on:
       target_date:
         description: "In case of \"stable\" release specify the date of the existing docker image in format YYYYMMDD (eg. 20220124)"
         type: string
-        default: "20131206"
+        default: "20220124"
 
 jobs:
   build:
