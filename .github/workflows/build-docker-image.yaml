@@ -39,7 +39,7 @@ jobs:
           file: Dockerfile.zed_cuda
           platforms: linux/amd64
           push: true
-          tags: husarion/zed:cuda-noetic
+          tags: husarion/zed:noetic-cuda
 
       - name: Build & Push Jetson Docker image
         if: inputs.platform == 'Jetson'
@@ -48,4 +48,4 @@ jobs:
           file: Dockerfile.zed_jetson
           platforms: linux/arm64
           push: true
-          tags: husarion/zed:jetson-melodic
+          tags: husarion/zed:melodic-jetson

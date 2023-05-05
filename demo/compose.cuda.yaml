@@ -1,8 +1,7 @@
 services:
         
   zed:
-    build:
-      dockerfile: ./Dockerfile.zed
+    image: husarion/zed:noetic-cuda
     container_name: zed
     network_mode: host
     runtime: nvidia
@@ -16,4 +15,4 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./params:/ros_ws/src/zed-ros-wrapper/zed_wrapper/params
     privileged: true
-    command: roslaunch zed_wrapper zed2.launch 
+    command: roslaunch zed_wrapper <camera_model>.launch

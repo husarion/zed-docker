@@ -14,9 +14,8 @@ ARG ZED_SDK_MINOR=8
 
 SHELL ["/bin/bash", "-c"]
 
+# ROS install
 ENV ROS_DISTRO=noetic
-
-# ROS Noetic install
 RUN echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros1-latest.list && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
     apt-get update && \ 
@@ -49,14 +48,11 @@ COPY --from=build /ros_ws /ros_ws
 
 SHELL ["/bin/bash", "-c"]
 
-ENV ROS_DISTRO=noetic
-
-# setup sources.list & keys 
-RUN echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros1-latest.list && \
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-
 # ROS install
-RUN apt-get update && \ 
+ENV ROS_DISTRO=noetic
+RUN echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros1-latest.list && \
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 &&\
+    apt-get update && \ 
     apt-get install -y --no-install-recommends \
     ros-$ROS_DISTRO-ros-core=1.5.0-1*
 
