@@ -23,9 +23,9 @@ jobs:
       - name: docker login
         env:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
-          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+          DOCKER_PASSWORD: ${{secrets.DOCKERHUB_TOKEN}}
         run: |
-          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+          docker login -u $DOCKER_USER -p $DOCKERHUB_TOKEN
     
       - name: Build & Push Desktop Docker Image
         if: inputs.platform == 'Desktop'
