@@ -1,32 +1,16 @@
-name: Build/Publish ROS Docker Image 
+name: Build & Push ROS Docker Image 
 
 on: 
   workflow_dispatch:
     inputs:
-      build_type:
-        description: "Is it a \"development\" or a \"stable\" release?"
-        required: true
-        default: 'development'
-        type: choice
-        options:
-          - development
-          - stable
       platform:
-        description: "Select Platform"
+        description: "Select Image"
         required: true
-        default: 'Desktop'
+        default: 'Desktop - CUDA'
         type: choice
         options:
           - Desktop
           - Jetson
-      target_release:
-        description: "In case of \"stable\" release specify the version of the existing docker image (eg. 1.0.12)"
-        type: string
-        default: "0.0.0"
-      target_date:
-        description: "In case of \"stable\" release specify the date of the existing docker image in format YYYYMMDD (eg. 20220124)"
-        type: string
-        default: "20220124"
 
 jobs:
   build:
@@ -35,38 +19,22 @@ jobs:
       fail-fast: false
 
     steps:
-
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Build Docker Image on Desktop
+    - uses: actions/checkout@v3
+    - name: docker login
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    
+    - name: Build & Push Desktop Docker Image
         if: inputs.platform == 'Desktop'
-        uses: husarion-ci/ros-docker-img-action@v0.4
-        with:
-          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
-          main_branch_name: main
-          build_type: ${{ inputs.build_type }}
-          dockerfile: Dockerfile.zed
-          platforms: linux/amd64
-          ros_distro: noetic
-          # variables important only for stable release
-          target_distro: noetic
-          target_release: ${{ inputs.target_release }}
-          target_date: ${{ inputs.target_date }}
+        run: |
+          docker build -f Dockerfile.zed_cuda -t ${{secrets.DOCKER_USER}}/zed:cuda-noetic .
+          docker push ${{secrets.DOCKER_USER}}/zed:cuda-noetic
 
-      - name: Build Docker Image on Jetson
+    - name: Build & Push Jetson Docker image
         if: inputs.platform == 'Jetson'
-        uses: husarion-ci/ros-docker-img-action@v0.4
-        with:
-          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
-          main_branch_name: main
-          build_type: ${{ inputs.build_type }}
-          dockerfile: Dockerfile.zed_jetson
-          platforms: linux/arm64
-          ros_distro: melodic
-          # variables important only for stable release
-          target_distro: melodic
-          target_release: ${{ inputs.target_release }}
-          target_date: ${{ inputs.target_date }}
+        run: |
+          docker build -f Dockerfile.zed_jetson -t ${{secrets.DOCKER_USER}}/zed:jetson-melodic .
+          docker push ${{secrets.DOCKER_USER}}/zed:jetson-melodic
