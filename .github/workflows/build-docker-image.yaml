@@ -6,7 +6,7 @@ on:
       platform:
         description: "Select Image"
         required: true
-        default: 'Desktop - CUDA'
+        default: 'Desktop'
         type: choice
         options:
           - Desktop
@@ -19,21 +19,21 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v3
-    - name: docker login
-      env:
-        DOCKER_USER: ${{secrets.DOCKER_USER}}
-        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      run: |
-        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      - uses: actions/checkout@v2
+      - name: docker login
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     
-    - name: Build & Push Desktop Docker Image
+      - name: Build & Push Desktop Docker Image
         if: inputs.platform == 'Desktop'
         run: |
           docker build -f Dockerfile.zed_cuda -t ${{secrets.DOCKER_USER}}/zed:cuda-noetic .
           docker push ${{secrets.DOCKER_USER}}/zed:cuda-noetic
 
-    - name: Build & Push Jetson Docker image
+      - name: Build & Push Jetson Docker image
         if: inputs.platform == 'Jetson'
         run: |
           docker build -f Dockerfile.zed_jetson -t ${{secrets.DOCKER_USER}}/zed:jetson-melodic .
