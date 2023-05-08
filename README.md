@@ -35,10 +35,11 @@ docker run --gpus all -it --privileged --rm zed roslaunch zed_wrapper <camera_mo
 
 ## Examples (using Docker Compose)
 
-Connect ZED camera to your laptop, open compose depending on the platform you are working on and in the field `<camera model>` enter the model name of the connected camera. Then run:
+Connect ZED camera to your platform, open compose depending on the platform you are working on and in the field `<camera model>` enter the model name of the connected camera. Then run:
 
 ```bash
 cd demo
+export DISPLAY=:1
 xhost local:root
-docker-compose up --build
+docker compose up
 ```
