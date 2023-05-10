@@ -1,56 +1,45 @@
 # zed-docker
 
-[![Build/Publish Docker Image](https://github.com/husarion/astra-docker/actions/workflows/build-docker-image.yaml/badge.svg)](https://github.com/husarion/astra-docker/actions/workflows/build-docker-image.yaml)
-
-Dockerized Orbbec ROS 2 Astra package: `OpenNI_SDK_ROS2_v1.0.2` built for ROS 2 Humble, Galactic and Foxy distros.
-
-The repository contains a GitHub Actions workflow for auto-deployment of built Docker image to https://hub.docker.com/r/husarion/astra repository.
+The repository contains a GitHub Actions workflow for auto-deployment of built Docker image to https://hub.docker.com/r/husarion/zed_desktop & https://hub.docker.com/r/husarion/zed_jetson repository.
 
 ## Docker image usage
 
-Available tags: `amd64`, `aarch64`.
+Available repos: 
+- `zed-desktop` for desktop platform with CUDA.
+- `zed-jetson` for Jetson platform.
 
-### Pulling the Docker image
+**Pulling the Docker image**
 
 ```bash
-docker pull husarion/zed:amd64
+docker pull husarion/zed-<select_platform>:humble
 ```
 
-### Running a Docker image
+**Running a Docker image**
 
 ```bash
-sudo docker run --rm -it \
---device /dev/bus/usb/ \
-husarion/zed:amd64 \
-roslaunch zed_wrapper zed2.launch # select launch according to your camera model
+docker run --gpus all -it --privileged --rm husarion/zed-<select_platform>:humble roslaunch zed_wrapper <camera_model>.launch
 ```
 
 ## Development
 
-### Building a Docker image
+**Building a Docker image**
 
 ```bash
-sudo docker build -t zed .
+docker build -t zed -f Dockerfile.<select_image> .
 ```
-
-### Running a Docker image
+**Running a Docker image**
 
 ```bash
-sudo docker run --rm -it \
---device /dev/bus/usb/ \
-astra \
-roslaunch zed_wrapper zed2.launch # select launch according to your camera model
+docker run --gpus all -it --privileged --rm zed roslaunch zed_wrapper <camera_model>.launch
 ```
 
 ## Examples (using Docker Compose)
 
-### Astra container + RViz2 container
-
-Connect Orbbec Astra camera to your laptop and run:
+Connect ZED camera to your platform, open compose depending on the platform you are working on and in the field `<camera model>` enter the model name of the connected camera. Then run:
 
 ```bash
 cd demo
-
+export DISPLAY=:1
 xhost local:root
-docker-compose up --build
+docker compose -f compose.<select_platform>.yaml up
 ```
