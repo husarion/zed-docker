@@ -1,16 +1,23 @@
 # Reference: https://github.com/stereolabs/zed-ros2-wrapper/tree/master/docker
-ARG IMAGE_NAME=dustynv/ros:humble-ros-base-l4t-r35.1.0
 
-FROM ${IMAGE_NAME}
-
+ARG L4T_MAJOR=35
+ARG L4T_MINOR=3
+ARG CUDA_MAJOR=11
+ARG CUDA_MINOR=4
+ARG CUDA_PATCH=19
 ARG ZED_SDK_MAJOR=4
 ARG ZED_SDK_MINOR=0
-ARG JETPACK_MAJOR=5
-ARG JETPACK_MINOR=0
-ARG L4T_MAJOR=35
-ARG L4T_MINOR=1
 
-ARG ROS2_DIST=humble
+### BUILD IMAGE ###
+FROM nvcr.io/nvidia/l4t-cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-devel AS build
+
+ARG L4T_MAJOR=35
+ARG L4T_MINOR=3
+ARG CUDA_MAJOR=11
+ARG CUDA_MINOR=4
+ARG CUDA_PATCH=19
+ARG ZED_SDK_MAJOR=4
+ARG ZED_SDK_MINOR=0
 
 # ZED ROS2 Wrapper dependencies version
 ARG XACRO_VERSION=2.0.8
@@ -21,9 +28,6 @@ ARG ROBOT_LOCALIZATION_VERSION=3.4.2
 
 SHELL ["/bin/bash", "-c"]
 
-ENV DEBIAN_FRONTEND noninteractive
-
-# Enable required NVIDIA drivers
 ENV NVIDIA_DRIVER_CAPABILITIES \
  ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
 
@@ -31,7 +35,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES \
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 42D5A192B819C5DA && \
     apt-get update || true && apt-get install -y --no-install-recommends apt-utils dialog && \
     rm -rf /var/lib/apt/lists/*
-  
+
 ENV TZ=Europe/Paris
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \ 
@@ -52,11 +56,9 @@ RUN echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_rel
     rm -rf ZED_SDK_Linux_JP.run && \
     rm -rf /var/lib/apt/lists/*
 
-# Install the ZED ROS2 Wrapper
-ENV ROS_DISTRO ${ROS2_DIST}
-
-# Install the ZED ROS2 Wrapper
-WORKDIR /root/ros2_ws/src
+# Workspace & dependencies are satisfied
+ENV ROS_DISTRO ${ROS_DISTRO}
+WORKDIR /ros2_ws/src
 RUN git clone --recursive https://github.com/stereolabs/zed-ros2-wrapper.git && \
     wget https://github.com/ros/xacro/archive/refs/tags/${XACRO_VERSION}.tar.gz -O - | tar -xvz && mv xacro-${XACRO_VERSION} xacro && \
     wget https://github.com/ros/diagnostics/archive/refs/tags/${DIAGNOSTICS_VERSION}.tar.gz -O - | tar -xvz && mv diagnostics-${DIAGNOSTICS_VERSION} diagnostics && \
@@ -66,16 +68,14 @@ RUN git clone --recursive https://github.com/stereolabs/zed-ros2-wrapper.git && 
     cp -r geographic-info/geographic_msgs/ . && \
     rm -rf geographic-info && \
     git clone https://github.com/ros-drivers/nmea_msgs.git --branch ros2 && \
-    git clone https://github.com/ros/angles.git --branch humble-devel
-
-
-# Check that all the dependencies are satisfied
-WORKDIR /root/ros2_ws
-RUN apt-get update -y || true && rosdep update && \
+    git clone https://github.com/ros/angles.git --branch humble-devel && \
+    cd .. && apt-get update -y || true && \
+    rosdep update && \
     rosdep install --from-paths src --ignore-src -r -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Build the dependencies and the ZED ROS2 Wrapper
+# Build
+WORKDIR /ros2_ws
 RUN source /opt/ros/$ROS_DISTRO/install/setup.bash && \
     colcon build --parallel-workers $(nproc) --symlink-install \
     --event-handlers console_direct+ --base-paths src \
@@ -89,4 +89,3 @@ COPY ./ros_entrypoint_jetson.sh /ros_entrypoint.sh
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]
-
