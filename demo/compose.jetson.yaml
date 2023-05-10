@@ -13,6 +13,7 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility,display,video
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - workspace:/ros_ws
       - ./params:/ros_ws/src/zed-ros-wrapper/zed_wrapper/params
     privileged: true
     command: roslaunch zed_wrapper <camera_model>.launch
@@ -27,3 +28,6 @@ services:
       - DISPLAY
       - LIBGL_ALWAYS_SOFTWARE=1
     command: rosrun rviz rviz -d /default.rviz
+
+volumes:
+  workspace:

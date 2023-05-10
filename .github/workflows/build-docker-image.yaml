@@ -1,6 +1,10 @@
 name: Build/Publish ROS Docker Image 
 
-on: 
+on:
+  push:
+    branches:    
+      - '*'
+
   workflow_dispatch:
     inputs:
       build_type:
