@@ -17,7 +17,7 @@ docker pull husarion/zed-desktop:noetic
 **Running a Docker image**
 
 ```bash
-docker run --gpus all -it --privileged --rm husarion/zed_desktop:noetic roslaunch zed_wrapper <camera_model>.launch
+docker run --gpus all -it --privileged --rm husarion/zed_<select_platform>:noetic roslaunch zed_wrapper <camera_model>.launch
 ```
 
 ## Development
