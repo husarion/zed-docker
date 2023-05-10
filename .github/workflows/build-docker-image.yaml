@@ -53,7 +53,7 @@ jobs:
         with:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
-          main_branch_name: ros2_desktop
+          main_branch_name: ros2
           dockerfile: ${{ matrix.dockerfile }}
           repo_name: ${{ matrix.repo_name }}
           build_type: ${{ inputs.build_type }}
