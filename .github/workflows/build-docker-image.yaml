@@ -1,10 +1,6 @@
 name: Build/Publish ROS Docker Image 
 
 on:
-  push:
-    branches:    
-      - '*'
-
   workflow_dispatch:
     inputs:
       build_type:
@@ -47,6 +43,10 @@ jobs:
             platforms: "linux/amd64"
             ros_distro: "noetic"
           - dockerfile: Dockerfile.jetson
+            repo_name: "zed-jetson"
+            platforms: "linux/arm64"
+            ros_distro: "noetic"
+          - dockerfile: Dockerfile.jetson_jp471
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
             ros_distro: "melodic"
