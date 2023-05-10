@@ -1,6 +1,6 @@
 name: Build/Publish ROS Docker Image 
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       build_type:
@@ -29,6 +29,8 @@ on:
     types:
       - closed
       - opened
+  push:
+    - ros2_desktop
 
 jobs:
   build:
