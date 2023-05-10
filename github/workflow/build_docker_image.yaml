@@ -42,10 +42,6 @@ jobs:
             repo_name: "zed-desktop"
             platforms: "linux/amd64"
             ros_distro: "humble"
-          - dockerfile: Dockerfile.jetson
-            repo_name: "zed-jetson"
-            platforms: "linux/arm64"
-            ros_distro: "humble"
 
     steps:
 
