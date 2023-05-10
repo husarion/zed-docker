@@ -1,7 +1,7 @@
 services:
         
   zed:
-    image: husarion/zed-jetson:noetic
+    image: husarion/zed-jetson:melodic
     container_name: zed
     network_mode: host
     runtime: nvidia
@@ -13,7 +13,8 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility,display,video
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ./params:/ros_ws/src/zed-ros-wrapper/zed_wrapper/params
+      - workspace:/ros_ws
+      - ./params_l4t32:/ros_ws/src/zed-ros-wrapper/zed_wrapper/params
     privileged: true
     command: roslaunch zed_wrapper <camera_model>.launch
 
@@ -27,3 +28,6 @@ services:
       - DISPLAY
       - LIBGL_ALWAYS_SOFTWARE=1
     command: rosrun rviz rviz -d /default.rviz
+
+volumes:
+  workspace:

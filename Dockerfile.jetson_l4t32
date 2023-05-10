@@ -48,6 +48,6 @@ RUN apt-get update && \
 RUN echo $(cat /ros_ws/src/zed-ros-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
 
 # setup entrypoint
-COPY ./ros_entrypoint_jetson.sh /
+COPY ./ros_entrypoint_l4t32.sh /
 
-ENTRYPOINT ["/ros_entrypoint_jetson.sh"]
+ENTRYPOINT ["/ros_entrypoint_l4t32.sh"]

@@ -46,7 +46,7 @@ jobs:
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
             ros_distro: "noetic"
-          - dockerfile: Dockerfile.jetson_jp471
+          - dockerfile: Dockerfile.jetson_l4t32
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
             ros_distro: "melodic"
