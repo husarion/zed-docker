@@ -5,37 +5,41 @@ The repository contains a GitHub Actions workflow for auto-deployment of built D
 ## Docker image usage
 
 Available repos: 
-- `zed-desktop` for desktop platform with CUDA.
-- `zed-jetson` for Jetson platform.
-
-**Pulling the Docker image**
-
-```bash
-docker pull husarion/zed-<select_platform>:humble
-```
-
-**Running a Docker image**
-
-```bash
-docker run --gpus all -it --privileged --rm husarion/zed-<select_platform>:humble roslaunch zed_wrapper <camera_model>.launch
-```
+- **`zed-desktop:noetic`** for desktop platform with CUDA (tested on platform with 11.7).
+- **`zed-jetson:noetic`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
+- **`no image`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
 
 ## Development
 
-**Building a Docker image**
+### Get image
+**a) Building a Docker image**
 
 ```bash
 docker build -t zed -f Dockerfile.<select_image> .
 ```
-**Running a Docker image**
+**b) Pulling the Docker image**
+
+```bash
+docker pull husarion/zed-<select_image>
+```
+
+### Running a Docker image
+
+**a) Running on desktop**
 
 ```bash
 docker run --gpus all -it --privileged --rm zed roslaunch zed_wrapper <camera_model>.launch
 ```
 
-## Examples (using Docker Compose)
+**b) Running on desktop**
 
-Connect ZED camera to your platform, open compose depending on the platform you are working on and in the field `<camera model>` enter the model name of the connected camera. Then run:
+```bash
+docker run --runtime=nvidia -it --privileged --rm zed roslaunch zed_wrapper <camera_model>.launch
+```
+
+## Docker Compose
+
+Connect ZED camera to your platform, open compose depending on the platform you are working on and in the `<camera model>` field, **enter the model name of the connected camera**. Then run:
 
 ```bash
 cd demo
