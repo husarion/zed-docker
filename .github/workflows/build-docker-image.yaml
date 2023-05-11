@@ -46,10 +46,6 @@ jobs:
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
             ros_distro: "noetic"
-          - dockerfile: Dockerfile.jetson_l4t32
-            repo_name: "zed-jetson"
-            platforms: "linux/arm64"
-            ros_distro: "melodic"
 
     steps:
 
@@ -71,3 +67,14 @@ jobs:
           target_distro: ${{ inputs.target_distro }}
           target_release: ${{ inputs.target_release }}
           target_date: ${{ inputs.target_date }}
+
+      - name: Build L4T32 Docker Image
+        uses: docker/build-push-action@v3
+        with:
+          file: Dockerfile.jetson_l4t32
+          platforms: linux/arm64
+          push: true
+          tags: |
+            husarion/zed-jetson:melodic-nightly
+            husarion/zed-jetson:melodic
+
