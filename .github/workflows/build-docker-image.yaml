@@ -1,6 +1,6 @@
 name: Build/Publish ROS Docker Image 
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       build_type:
