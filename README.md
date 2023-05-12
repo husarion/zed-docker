@@ -7,7 +7,7 @@ The repository contains a GitHub Actions workflow for auto-deployment of built D
 Available repos: 
 - **`zed-desktop:noetic`** for desktop platform with CUDA (tested on platform with 11.7).
 - **`zed-jetson:noetic`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
-- **`no image`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
+- currently there is **no image** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2**.
 
 ## Development
 
@@ -15,26 +15,24 @@ Available repos:
 **a) Building a Docker image**
 
 ```bash
-docker build -t zed -f Dockerfile.<select_image> .
+docker build -t <image_name> -f <select_dockerfile> .
 ```
 **b) Pulling the Docker image**
 
 ```bash
-docker pull husarion/zed-<select_image>
+docker pull <image_name>
 ```
 
 ### Running a Docker image
 
-**a) Running on desktop**
+**Running on desktop**
 
 ```bash
-docker run --gpus all -it --privileged --rm zed roslaunch zed_wrapper <camera_model>.launch
-```
-
-**b) Running on desktop**
-
-```bash
-docker run --runtime=nvidia -it --privileged --rm zed roslaunch zed_wrapper <camera_model>.launch
+docker run --runtime nvidia -it --privileged --ipc=host --pid=host -e DISPLAY \
+  -v /dev/shm:/dev/shm -v /tmp/.X11-unix/:/tmp/.X11-unix \
+  -v /tmp/zed_ai/:/usr/local/zed/resources/ \
+  <image_name> \
+  roslaunch zed_wrapper <camera_model>.launch
 ```
 
 ## Docker Compose
