@@ -4,7 +4,7 @@ ARG L4T_PATCH=1
 ARG ZED_SDK_MAJOR=4
 ARG ZED_SDK_MINOR=0
 
-FROM dustynv/ros:melodic-ros-base-l4t-rr${L4T_MAJOR}.${L4T_MINOR}.${L4T_PATCH} AS build
+FROM nvcr.io/nvidia/l4t-base:r${L4T_MAJOR}.${L4T_MINOR}.${L4T_PATCH} AS build
 
 ARG L4T_MAJOR=32
 ARG L4T_MINOR=7
@@ -26,6 +26,21 @@ RUN apt-get update || true && \
     rm -rf ZED_SDK_Linux.run && \
     rm -rf /var/lib/apt/lists/*
 
+# ROS Melodic install
+ENV ROS_DISTRO=melodic
+RUN echo "Europe/Paris" > /etc/localtime && \
+    apt-get update && apt-get install -q -y --no-install-recommends \
+    dirmngr \
+    gnupg2 && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros1-latest.list && \
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
+    apt-get update && \ 
+    apt-get install -y --no-install-recommends \
+    ros-$ROS_DISTRO-ros-core=1.4.1-0* && \
+    rm -rf /var/lib/apt/lists/*
+
 # Install tools
 WORKDIR /ros_ws
 RUN apt-get update && \
@@ -39,8 +54,10 @@ RUN apt-get update && \
 
 # Workspace & dependencies
 RUN apt-get update && \
-    git clone --recursive -b v${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}.x https://github.com/stereolabs/zed-ros-wrapper src/zed-ros-wrapper && \
+    git clone --recursive https://github.com/stereolabs/zed-ros-wrapper src/zed-ros-wrapper && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
+    rosdep init && \
+    rosdep update --rosdistro $ROS_DISTRO && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
 
