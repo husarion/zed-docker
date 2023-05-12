@@ -14,6 +14,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./params:/ros_ws/src/zed-ros-wrapper/zed_wrapper/params
+      - /tmp/zed_ai/:/usr/local/zed/resources/
     privileged: true
     command: ros2 launch zed_wrapper zed2.launch.py
 
@@ -22,6 +23,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./default.rviz:/root/.rviz2/default.rviz
+      - /tmp/zed_ai/:/usr/local/zed/resources/
     environment:
       - DISPLAY
       - LIBGL_ALWAYS_SOFTWARE=1
