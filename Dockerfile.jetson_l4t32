@@ -1,32 +1,32 @@
 ARG L4T_MAJOR=32
 ARG L4T_MINOR=7
-ARG ZED_SDK_MAJOR=3
-ARG ZED_SDK_MINOR=8
+ARG L4T_PATCH=1
+ARG ZED_SDK_MAJOR=4
+ARG ZED_SDK_MINOR=0
 
-FROM stereolabs/zed:${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}-devel-l4t-r${L4T_MAJOR}.${L4T_MINOR} AS build
+FROM dustynv/ros:melodic-ros-base-l4t-rr${L4T_MAJOR}.${L4T_MINOR}.${L4T_PATCH} AS build
 
 ARG L4T_MAJOR=32
 ARG L4T_MINOR=7
-ARG ZED_SDK_MAJOR=3
-ARG ZED_SDK_MINOR=8
+ARG L4T_PATCH=1
+ARG ZED_SDK_MAJOR=4
+ARG ZED_SDK_MINOR=0
 
 SHELL ["/bin/bash", "-c"]
 
-# ROS Melodic install
-ENV ROS_DISTRO=melodic
-RUN apt-get update && apt-get install -q -y --no-install-recommends \
-    dirmngr \
-    gnupg2 && \
+# Setup the ZED SDK
+ENV LOGNAME root
+RUN apt-get update || true && \
+    apt-get install --no-install-recommends zstd lsb-release wget less udev sudo apt-transport-https build-essential cmake -y && \
+    echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}.${L4T_PATCH_VERSION}" > /etc/nv_tegra_release ; \
+    wget -q --no-check-certificate -O ZED_SDK_Linux.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/l4t${L4T_MAJOR}.${L4T_MINOR}/jetsons && \
+    chmod +x ZED_SDK_Linux.run && \
+    ./ZED_SDK_Linux.run -- silent skip_tools skip_cuda && \
+    rm -rf /usr/local/zed/resources/* && \
+    rm -rf ZED_SDK_Linux.run && \
     rm -rf /var/lib/apt/lists/*
 
-RUN echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros1-latest.list && \
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
-    apt-get update && \ 
-    apt-get install -y --no-install-recommends \
-    ros-$ROS_DISTRO-ros-core=1.4.1-0* && \
-    rm -rf /var/lib/apt/lists/*
-
-# ZED setup
+# Install tools
 WORKDIR /ros_ws
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -37,17 +37,21 @@ RUN apt-get update && \
         rosdep && \
     rm -rf /var/lib/apt/lists/*
 
+# Workspace & dependencies
 RUN apt-get update && \
     git clone --recursive -b v${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}.x https://github.com/stereolabs/zed-ros-wrapper src/zed-ros-wrapper && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
-    rosdep init && \
-    rosdep update --rosdistro $ROS_DISTRO && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
 
+# Build
+RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
+    catkin_make -DCMAKE_BUILD_TYPE=Release -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs -DCUDA_CUDART_LIBRARY=/usr/local/cuda/lib64/libcudart.so
+
+# Git action version
 RUN echo $(cat /ros_ws/src/zed-ros-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
 
 # setup entrypoint
-COPY ./ros_entrypoint_l4t32.sh /
+COPY ./ros_entrypoint.sh /
 
-ENTRYPOINT ["/ros_entrypoint_l4t32.sh"]
+ENTRYPOINT ["/ros_entrypoint.sh"]

@@ -43,7 +43,7 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.
     ros-$ROS_DISTRO-ros-core=1.5.0-1* && \    
     rm -rf /var/lib/apt/lists/*
 
-# ZED setup
+# Install tools
 WORKDIR /ros_ws
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -54,7 +54,7 @@ RUN apt-get update && \
         rosdep && \    
     rm -rf /var/lib/apt/lists/*
 
-# Check dependence
+# Workspace & dependencies
 RUN apt-get update && \
     git clone --recursive https://github.com/stereolabs/zed-ros-wrapper src/zed-ros-wrapper && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
@@ -120,7 +120,7 @@ RUN apt-get update && \
         rosdep && \    
     rm -rf /var/lib/apt/lists/*
 
-# Check dependence
+# Workspace & dependencies
 RUN apt-get update && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
     rosdep init && \
