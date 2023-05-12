@@ -32,7 +32,7 @@ docker run --runtime nvidia -it --privileged --ipc=host --pid=host -e DISPLAY \
   -v /dev/shm:/dev/shm -v /tmp/.X11-unix/:/tmp/.X11-unix \
   -v /tmp/zed_ai/:/usr/local/zed/resources/ \
   <image_name> \
-  roslaunch zed_wrapper <camera_model>.launch
+  ros2 lanuch zed_wrapper <camera_model>.launch.py
 ```
 
 ## Docker Compose
