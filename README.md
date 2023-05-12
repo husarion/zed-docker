@@ -15,26 +15,24 @@ Available repos:
 **a) Building a Docker image**
 
 ```bash
-docker build -t zed -f Dockerfile.<select_image> .
+docker build -t <image_name> -f <select_dockerfile> .
 ```
 **b) Pulling the Docker image**
 
 ```bash
-docker pull husarion/zed-<select_image>
+docker pull <image_name>
 ```
 
 ### Running a Docker image
 
-**a) Running on desktop**
+**Running on desktop**
 
 ```bash
-docker run --gpus all -it --privileged --rm zed roslaunch zed_wrapper <camera_model>.launch
-```
-
-**b) Running on desktop**
-
-```bash
-docker run --runtime=nvidia -it --privileged --rm zed roslaunch zed_wrapper <camera_model>.launch
+docker run --runtime nvidia -it --privileged --ipc=host --pid=host -e DISPLAY \
+  -v /dev/shm:/dev/shm -v /tmp/.X11-unix/:/tmp/.X11-unix \
+  -v /tmp/zed_ai/:/usr/local/zed/resources/ \
+  <image_name> \
+  roslaunch zed_wrapper <camera_model>.launch
 ```
 
 ## Docker Compose
