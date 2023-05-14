@@ -1,7 +1,7 @@
 services:
         
   zed:
-    image: zed
+    image: ${ZED_IMAGE}
     container_name: zed
     network_mode: host
     runtime: nvidia
