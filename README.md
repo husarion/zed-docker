@@ -14,7 +14,7 @@ Available repos
 **ROS2:**
 > - **`husarion/zed-desktop:humble`** for desktop platform with CUDA (tested on platform with 11.7).
 > - **`husarion/zed-jetson:humble`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
-> - **`husarion/zed-jetson:foxy`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
+> - **`no image`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
 
 ## Prepare environment
 
