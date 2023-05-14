@@ -10,7 +10,7 @@ services:
       - ./params:/ros_ws/src/zed-ros-wrapper/zed_wrapper/params
       - /dev:/dev 
     privileged: true
-    command: roslaunch zed_wrapper zed.launch
+    command: roslaunch zed_wrapper ${CAMERA_MODEL}.launch
 
   rviz:
     image: husarion/rviz:noetic

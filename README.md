@@ -52,5 +52,5 @@ Connect ZED camera to your platform, open compose depending on the platform you 
 cd demo
 export DISPLAY=:1
 xhost local:root
-docker compose -f compose.<select_platform>.yaml up
+docker compose up
 ```
