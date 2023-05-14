@@ -1,13 +1,29 @@
 # zed-docker
 
-The repository contains a GitHub Actions workflow for auto-deployment of built Docker image to https://hub.docker.com/r/husarion/zed_desktop & https://hub.docker.com/r/husarion/zed_jetson repository.
+The repository contains a GitHub Actions workflow for auto-deployment of built Docker images to [husarion/zed_desktop](https://hub.docker.com/r/husarion/zed-desktop) and [husarion/zed_jetson](https://hub.docker.com/r/husarion/zed-jetson) Docker Hub repositories.
 
 ## Docker image usage
 
-Available repos: 
-- **`zed-desktop:noetic`** for desktop platform with CUDA (tested on platform with 11.7).
-- **`zed-jetson:noetic`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
-- currently there is **no image** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2**.
+Available repos
+
+**ROS1:**
+> - **`zed-desktop:noetic`** for desktop platform with CUDA (tested on platform with 11.7).
+> - **`zed-jetson:noetic`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
+> - **`husarion/zed-jetson:melodic`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
+
+**ROS2:**
+> - **`husarion/zed-desktop:humble`** for desktop platform with CUDA (tested on platform with 11.7).
+> - **`husarion/zed-jetson:humble`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
+> - **`husarion/zed-jetson:foxy`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
+
+## Prepare environment
+
+Before you started it is recommanded to setup few variables.
+
+```bash
+export ZED_IMAGE=<zed_image>
+export CAMERA_MODEL=<camera_model>
+```
 
 ## Development
 
@@ -15,12 +31,12 @@ Available repos:
 **a) Building a Docker image**
 
 ```bash
-docker build -t <image_name> -f <select_dockerfile> .
+docker build -t <image_tag> -f <select_dockerfile> .
 ```
 **b) Pulling the Docker image**
 
 ```bash
-docker pull <image_name>
+docker pull ${ZED_IMAGE}
 ```
 
 ### Running a Docker image
@@ -31,17 +47,17 @@ docker pull <image_name>
 docker run --runtime nvidia -it --privileged --ipc=host --pid=host -e DISPLAY \
   -v /dev/shm:/dev/shm -v /tmp/.X11-unix/:/tmp/.X11-unix \
   -v /tmp/zed_ai/:/usr/local/zed/resources/ \
-  <image_name> \
-  ros2 lanuch zed_wrapper <camera_model>.launch.py
+  ${ZED_IMAGE} \
+  ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
 ```
 
 ## Docker Compose
 
-Connect ZED camera to your platform, open compose depending on the platform you are working on and in the `<camera model>` field, **enter the model name of the connected camera**. Then run:
+Connect ZED camera to your platform, `export CAMERA_MODEL` and run following commands:
 
 ```bash
 cd demo
 export DISPLAY=:1
 xhost local:root
-docker compose -f compose.<select_platform>.yaml up
+docker compose up
 ```
