@@ -46,7 +46,7 @@ docker run --runtime nvidia -it --privileged --ipc=host --pid=host -e DISPLAY \
 
 ## Docker Compose
 
-Connect ZED camera to your platform, open compose depending on the platform you are working on and in the `<camera model>` field, **enter the model name of the connected camera**. Then run:
+Connect ZED camera to your platform, `export CAMERA_MODEL` and run following commands:
 
 ```bash
 cd demo
