@@ -3,14 +3,16 @@ ARG L4T_MINOR=7
 ARG L4T_PATCH=1
 ARG ZED_SDK_MAJOR=4
 ARG ZED_SDK_MINOR=0
+ARG ROS_DISTRO=melodic
 
 FROM nvcr.io/nvidia/l4t-base:r${L4T_MAJOR}.${L4T_MINOR}.${L4T_PATCH} AS build
 
-ARG L4T_MAJOR=32
-ARG L4T_MINOR=7
-ARG L4T_PATCH=1
-ARG ZED_SDK_MAJOR=4
-ARG ZED_SDK_MINOR=0
+ARG L4T_MAJOR
+ARG L4T_MINOR
+ARG L4T_PATCH
+ARG ZED_SDK_MAJOR
+ARG ZED_SDK_MINOR
+ARG ROS_DISTRO
 
 SHELL ["/bin/bash", "-c"]
 
@@ -27,7 +29,7 @@ RUN apt-get update || true && \
     rm -rf /var/lib/apt/lists/*
 
 # ROS Melodic install
-ENV ROS_DISTRO=melodic
+ENV ROS_DISTRO $ROS_DISTRO
 RUN echo "Europe/Paris" > /etc/localtime && \
     apt-get update && apt-get install -q -y --no-install-recommends \
     dirmngr \
@@ -48,7 +50,7 @@ RUN apt-get update && \
         build-essential \
         git \
         python3-pip && \
-        pip3 install \
+    pip3 install \
         rosdep && \
     rm -rf /var/lib/apt/lists/*
 

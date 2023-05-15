@@ -9,13 +9,13 @@ ARG ROS_DISTRO=noetic
 ### BUILD IMAGE ###
 FROM nvidia/cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-devel-ubuntu${UBUNTU_RELEASE_YEAR}.04 AS build
 
-ARG UBUNTU_RELEASE_YEAR=20
-ARG CUDA_MAJOR=11
-ARG CUDA_MINOR=7
-ARG CUDA_PATCH=1
-ARG ZED_SDK_MAJOR=4
-ARG ZED_SDK_MINOR=0
-ARG ROS_DISTRO=noetic
+ARG UBUNTU_RELEASE_YEAR
+ARG CUDA_MAJOR
+ARG CUDA_MINOR
+ARG CUDA_PATCH
+ARG ZED_SDK_MAJOR
+ARG ZED_SDK_MINOR
+ARG ROS_DISTRO
 
 SHELL ["/bin/bash", "-c"]
 
@@ -50,7 +50,7 @@ RUN apt-get update && \
         build-essential \
         git \
         python3-pip && \
-        pip3 install \
+    pip3 install \
         rosdep && \    
     rm -rf /var/lib/apt/lists/*
 
@@ -72,13 +72,13 @@ FROM nvidia/cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-runtime-ubuntu${UBUNT
 
 COPY --from=build /ros_ws /ros_ws
 
-ARG UBUNTU_RELEASE_YEAR=20
-ARG CUDA_MAJOR=11
-ARG CUDA_MINOR=7
-ARG CUDA_PATCH=1
-ARG ZED_SDK_MAJOR=4
-ARG ZED_SDK_MINOR=0
-ARG ROS_DISTRO=noetic
+ARG UBUNTU_RELEASE_YEAR
+ARG CUDA_MAJOR
+ARG CUDA_MINOR
+ARG CUDA_PATCH
+ARG ZED_SDK_MAJOR
+ARG ZED_SDK_MINOR
+ARG ROS_DISTRO
 
 SHELL ["/bin/bash", "-c"]
 
@@ -113,7 +113,7 @@ RUN apt-get update && \
         build-essential \
         git \
         python3-pip && \
-        pip3 install \
+    pip3 install \
         rosdep && \    
     rm -rf /var/lib/apt/lists/*
 
