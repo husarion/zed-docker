@@ -51,7 +51,7 @@ docker run --runtime nvidia -it --privileged --ipc=host --pid=host -e DISPLAY \
   ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
 ```
 
-## Docker Compose
+## Running demo with Docker compose
 
 Connect ZED camera to your platform, `export CAMERA_MODEL` and run following commands:
 

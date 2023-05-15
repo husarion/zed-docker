@@ -7,17 +7,19 @@ ARG CUDA_MINOR=4
 ARG CUDA_PATCH=19
 ARG ZED_SDK_MAJOR=4
 ARG ZED_SDK_MINOR=0
+ARG ROS_DISTRO=foxy
 
 ### BUILD IMAGE ###
 FROM nvcr.io/nvidia/l4t-cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-devel AS build
 
-ARG L4T_MAJOR=35
-ARG L4T_MINOR=3
-ARG CUDA_MAJOR=11
-ARG CUDA_MINOR=4
-ARG CUDA_PATCH=19
-ARG ZED_SDK_MAJOR=4
-ARG ZED_SDK_MINOR=0
+ARG L4T_MAJOR
+ARG L4T_MINOR
+ARG CUDA_MAJOR
+ARG CUDA_MINOR
+ARG CUDA_PATCH
+ARG ZED_SDK_MAJOR
+ARG ZED_SDK_MINOR
+ARG ROS_DISTRO
 
 SHELL ["/bin/bash", "-c"]
 
@@ -39,12 +41,12 @@ RUN echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_rel
     rm -rf /var/lib/apt/lists/*
 
 # ROS install
-ENV ROS_DISTRO=foxy
+ENV ROS_DISTRO $ROS_DISTRO
 RUN echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
     apt-get update && \ 
     apt-get install -y --no-install-recommends \
-    ros-$ROS_DISTRO-ros-core=0.9.2-1* \
+    ros-$ROS_DISTRO-ros-core \
     && rm -rf /var/lib/apt/lists/*
 
 # ZED setup
@@ -96,13 +98,14 @@ RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
 ### RUNTIME IMAGE ### # Reduction from 6.1GB to 3.9GB
 FROM nvcr.io/nvidia/l4t-cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-runtime AS runtime
 
-ARG L4T_MAJOR=35
-ARG L4T_MINOR=3
-ARG CUDA_MAJOR=11
-ARG CUDA_MINOR=4
-ARG CUDA_PATCH=19
-ARG ZED_SDK_MAJOR=4
-ARG ZED_SDK_MINOR=0
+ARG L4T_MAJOR
+ARG L4T_MINOR
+ARG CUDA_MAJOR
+ARG CUDA_MINOR
+ARG CUDA_PATCH
+ARG ZED_SDK_MAJOR
+ARG ZED_SDK_MINOR
+ARG ROS_DISTRO
 
 COPY --from=build /ros2_ws /ros2_ws
 
@@ -126,12 +129,12 @@ RUN echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_rel
     rm -rf /var/lib/apt/lists/*
 
 # ROS install
-ENV ROS_DISTRO=foxy
+ENV ROS_DISTRO $ROS_DISTRO
 RUN echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
     apt-get update && \ 
     apt-get install -y --no-install-recommends \
-    ros-$ROS_DISTRO-ros-core=0.9.2-1* \
+    ros-$ROS_DISTRO-ros-core \
     && rm -rf /var/lib/apt/lists/*
 
 # ZED setup
