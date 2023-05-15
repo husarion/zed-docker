@@ -32,7 +32,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
@@ -42,43 +42,17 @@ jobs:
             repo_name: "zed-desktop"
             platforms: "linux/amd64"
             ros_distro: "noetic"
+            runner: ubuntu-latest
           - dockerfile: Dockerfile.jetson
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
             ros_distro: "noetic"
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Build Docker Image
-        uses: husarion-ci/ros-docker-img-action@v0.4
-        with:
-          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
-          main_branch_name: ros1
-          dockerfile: ${{ matrix.dockerfile }}
-          repo_name: ${{ matrix.repo_name }}
-          build_type: ${{ inputs.build_type }}
-          ros_distro: ${{ matrix.ros_distro }}
-          platforms: ${{ matrix.platforms }}
-          # variables important only for stable release
-          target_distro: ${{ inputs.target_distro }}
-          target_release: ${{ inputs.target_release }}
-          target_date: ${{ inputs.target_date }}
-
-  build:
-    runs-on: jetson
-    strategy:
-      fail-fast: false
-      matrix:
-
-        include:
+            runner: ubuntu-latest
           - dockerfile: Dockerfile.jetson_l4t32
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
             ros_distro: "melodic"
+            runner: jetson
 
     steps:
 
