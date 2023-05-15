@@ -32,7 +32,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: jetson
     strategy:
       fail-fast: false
       matrix:
