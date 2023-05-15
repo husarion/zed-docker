@@ -7,14 +7,14 @@ The repository contains a GitHub Actions workflow for auto-deployment of built D
 Available repos
 
 **ROS1:**
-> - **`zed-desktop:noetic`** for desktop platform with CUDA (tested on platform with 11.7).
-> - **`zed-jetson:noetic`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
-> - **`husarion/zed-jetson:melodic`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
+- **`zed-desktop:noetic`** for desktop platform with CUDA (tested on platform with 11.7).
+- **`zed-jetson:noetic`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
+- **`husarion/zed-jetson:melodic`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
 
 **ROS2:**
-> - **`husarion/zed-desktop:humble`** for desktop platform with CUDA (tested on platform with 11.7).
-> - **`husarion/zed-jetson:foxy`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
-> - **`no image`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
+- **`husarion/zed-desktop:humble`** for desktop platform with CUDA (tested on platform with 11.7).
+- **`husarion/zed-jetson:humble`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
+- **`no image`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
 
 ## Prepare environment
 
