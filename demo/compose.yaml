@@ -1,0 +1,25 @@
+services:
+        
+  zed:
+    image: ${ZED_IMAGE}
+    container_name: zed
+    network_mode: host
+    runtime: nvidia
+    tty: true
+    volumes:
+      - ./params:/ros_ws/src/zed-ros-wrapper/zed_wrapper/params
+      - /dev:/dev 
+    privileged: true
+    command: roslaunch zed_wrapper ${CAMERA_MODEL}.launch
+
+  rviz:
+    image: husarion/rviz:noetic
+    container_name: rviz
+    network_mode: host
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./default.rviz:/default.rviz
+    environment:
+      - DISPLAY
+      - LIBGL_ALWAYS_SOFTWARE=1
+    command: sh -c 'while ! rostopic list | grep -q /rosout; do sleep 1; done && rosrun rviz rviz -d /default.rviz'
