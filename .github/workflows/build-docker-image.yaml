@@ -52,7 +52,7 @@ jobs:
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
             ros_distro: "melodic"
-            runner: jetson
+            runner: self-hosted
 
     steps:
 
