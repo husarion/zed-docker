@@ -32,27 +32,27 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.runner }}
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
 
         include:
-          - dockerfile: Dockerfile.desktop
-            repo_name: "zed-desktop"
-            platforms: "linux/amd64"
-            ros_distro: "noetic"
-            runner: ubuntu-latest
-          - dockerfile: Dockerfile.jetson
-            repo_name: "zed-jetson"
-            platforms: "linux/arm64"
-            ros_distro: "noetic"
-            runner: ubuntu-latest
+          # - dockerfile: Dockerfile.desktop
+          #   repo_name: "zed-desktop"
+          #   platforms: "linux/amd64"
+          #   ros_distro: "noetic"
+          #   runner: ubuntu-latest
+          # - dockerfile: Dockerfile.jetson
+          #   repo_name: "zed-jetson"
+          #   platforms: "linux/arm64"
+          #   ros_distro: "noetic"
+            # runner: ubuntu-latest
           - dockerfile: Dockerfile.jetson_l4t32
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
             ros_distro: "melodic"
-            runner: self-hosted
+            # runner: self-hosted
 
     steps:
 
