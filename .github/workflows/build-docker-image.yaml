@@ -32,7 +32,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
@@ -42,10 +42,12 @@ jobs:
             repo_name: "zed-desktop"
             platforms: "linux/amd64"
             ros_distro: "humble"
+            runner: ubuntu-latest
           - dockerfile: Dockerfile.jetson
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
             ros_distro: "foxy"
+            runner: ubuntu-latest
 
     steps:
 
