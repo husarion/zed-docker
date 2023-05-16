@@ -52,27 +52,27 @@ RUN echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources
 # ZED setup
 RUN apt-get update || true && \
     apt-get install --no-install-recommends -y \
-    ros-${ROS_DISTRO}-ros-base \
-    ros-${ROS_DISTRO}-ament-cmake-clang-format \
-    ros-${ROS_DISTRO}-image-transport \
-    ros-${ROS_DISTRO}-image-transport-plugins \
-    ros-${ROS_DISTRO}-diagnostic-updater \
-    ros-${ROS_DISTRO}-xacro \
-    build-essential \
-    git \
-    python3-colcon-common-extensions \
-    python3-colcon-mixin \
-    python3-rosdep \
-    python3-vcstool \
-    python3-flake8-docstrings \
-    python3-pip \
-    python3-pytest-cov \
-    ros-dev-tools && \
+        ros-${ROS_DISTRO}-ros-base \
+        ros-${ROS_DISTRO}-ament-cmake-clang-format \
+        ros-${ROS_DISTRO}-image-transport \
+        ros-${ROS_DISTRO}-image-transport-plugins \
+        ros-${ROS_DISTRO}-diagnostic-updater \
+        ros-${ROS_DISTRO}-xacro \
+        build-essential \
+        git \
+        python3-colcon-common-extensions \
+        python3-colcon-mixin \
+        python3-rosdep \
+        python3-vcstool \
+        python3-flake8-docstrings \
+        python3-pip \
+        python3-pytest-cov \
+        ros-dev-tools && \
     pip3 install \
-    argcomplete \
-    numpy \
-    empy \
-    lark && \
+        argcomplete \
+        numpy \
+        empy \
+        lark && \
     rm -rf /var/lib/apt/lists/*
 
 # Check dependencies
@@ -140,27 +140,27 @@ RUN echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources
 # ZED setup
 RUN apt-get update || true && \
     apt-get install --no-install-recommends -y \
-    ros-${ROS_DISTRO}-ros-base \
-    ros-${ROS_DISTRO}-ament-cmake-clang-format \
-    ros-${ROS_DISTRO}-image-transport \
-    ros-${ROS_DISTRO}-image-transport-plugins \
-    ros-${ROS_DISTRO}-diagnostic-updater \
-    ros-${ROS_DISTRO}-xacro \
-    build-essential \
-    git \
-    python3-colcon-common-extensions \
-    python3-colcon-mixin \
-    python3-rosdep \
-    python3-vcstool \
-    python3-flake8-docstrings \
-    python3-pip \
-    python3-pytest-cov \
-    ros-dev-tools && \
+        ros-${ROS_DISTRO}-ros-base \
+        ros-${ROS_DISTRO}-ament-cmake-clang-format \
+        ros-${ROS_DISTRO}-image-transport \
+        ros-${ROS_DISTRO}-image-transport-plugins \
+        ros-${ROS_DISTRO}-diagnostic-updater \
+        ros-${ROS_DISTRO}-xacro \
+        build-essential \
+        git \
+        python3-colcon-common-extensions \
+        python3-colcon-mixin \
+        python3-rosdep \
+        python3-vcstool \
+        python3-flake8-docstrings \
+        python3-pip \
+        python3-pytest-cov \
+        ros-dev-tools && \
     pip3 install \
-    argcomplete \
-    numpy \
-    empy \
-    lark && \
+        argcomplete \
+        numpy \
+        empy \
+        lark && \
     rm -rf /var/lib/apt/lists/*
 
 # Check dependencies
@@ -174,6 +174,5 @@ RUN apt-get update && \
 
 # Setup environment variables
 COPY ./ros_entrypoint.sh /ros_entrypoint.sh
-
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]

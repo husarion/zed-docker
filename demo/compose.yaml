@@ -11,7 +11,7 @@ services:
       - /dev:/dev 
       - /tmp/zed_ai/:/usr/local/zed/resources/
     privileged: true
-    command: ros2 launch zed_wrapper zed2.launch.py
+    command: ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
 
   rviz:
     image: husarion/rviz2:humble
