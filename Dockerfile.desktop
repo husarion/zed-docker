@@ -1,0 +1,168 @@
+
+# Reference: https://github.com/stereolabs/zed-ros2-wrapper/tree/master/docker
+
+ARG UBUNTU_RELEASE_YEAR=22
+ARG CUDA_MAJOR=11
+ARG CUDA_MINOR=7
+ARG CUDA_PATCH=1
+ARG ZED_SDK_MAJOR=4
+ARG ZED_SDK_MINOR=0
+ARG ROS_DISTRO=humble
+
+### BUILD IMAGE ###
+FROM nvidia/cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-devel-ubuntu${UBUNTU_RELEASE_YEAR}.04 AS build
+
+ARG UBUNTU_RELEASE_YEAR
+ARG CUDA_MAJOR
+ARG CUDA_MINOR
+ARG CUDA_PATCH
+ARG ZED_SDK_MAJOR
+ARG ZED_SDK_MINOR
+ARG ROS_DISTRO
+
+SHELL ["/bin/bash", "-c"]
+
+ENV NVIDIA_DRIVER_CAPABILITIES \
+    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
+
+# Setup the ZED SDK
+RUN echo "Europe/Paris" > /etc/localtime ; echo "CUDA Version ${CUDA_MAJOR}.${CUDA_MINOR}.0" > /usr/local/cuda/version.txt && \
+    apt-get update -y || true && \
+    apt-get install --no-install-recommends dialog bash-completion lsb-release wget less udev sudo  build-essential cmake zstd python3 python3-pip libpng-dev libgomp1 -y && \
+    python3 -m pip install --upgrade pip; python3 -m pip install numpy opencv-python-headless && \
+    wget -q -O ZED_SDK_Linux_Ubuntu.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}${CUDA_MINOR}/ubuntu${UBUNTU_RELEASE_YEAR} && \
+    chmod +x ZED_SDK_Linux_Ubuntu.run && \
+    ./ZED_SDK_Linux_Ubuntu.run -- silent skip_tools skip_cuda && \
+    ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so && \
+    rm ZED_SDK_Linux_Ubuntu.run && \
+    rm -rf /var/lib/apt/lists/*
+    
+# ROS install
+ENV ROS_DISTRO $ROS_DISTRO
+RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" > /etc/apt/sources.list.d/ros2-latest.list && \
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
+    apt-get update && \ 
+    apt-get install -y --no-install-recommends \
+    ros-$ROS_DISTRO-ros-core \
+    && rm -rf /var/lib/apt/lists/*
+
+# ZED setup
+RUN apt-get update || true && \
+    apt-get install --no-install-recommends -y \
+        ros-${ROS_DISTRO}-ros-base \
+        ros-${ROS_DISTRO}-ament-cmake-clang-format \
+        ros-${ROS_DISTRO}-image-transport \
+        ros-${ROS_DISTRO}-image-transport-plugins \
+        ros-${ROS_DISTRO}-diagnostic-updater \
+        ros-${ROS_DISTRO}-xacro \
+        python3-flake8-docstrings \
+        python3-pip \
+        python3-pytest-cov \
+        ros-dev-tools && \
+    pip3 install \
+        argcomplete \
+        numpy \
+        empy \
+        lark && \
+    rm -rf /var/lib/apt/lists/*
+
+# Check dependencies
+WORKDIR /ros2_ws
+RUN apt-get update && \
+    git clone --recursive https://github.com/stereolabs/zed-ros2-wrapper.git src/zed-ros2-wrapper && \
+    source /opt/ros/$ROS_DISTRO/setup.bash && \
+    rosdep init && \
+    rosdep update --rosdistro $ROS_DISTRO && \
+    rosdep install --from-paths src -y -i && \
+    rm -rf /var/lib/apt/lists/*
+
+# Build
+RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
+    colcon build --parallel-workers $(nproc) --symlink-install \
+    --event-handlers console_direct+ --base-paths src \
+    --cmake-args ' -DCMAKE_BUILD_TYPE=Release' \
+    ' -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs' \
+    ' -DCMAKE_CXX_FLAGS="-Wl,--allow-shlib-undefined"'
+
+### BUILD RUNTIME ### # Reduction from 13.4GB to 8.6GB
+FROM nvidia/cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-runtime-ubuntu${UBUNTU_RELEASE_YEAR}.04 AS runtime
+
+COPY --from=build /ros2_ws /ros2_ws
+
+ARG UBUNTU_RELEASE_YEAR
+ARG CUDA_MAJOR
+ARG CUDA_MINOR
+ARG ZED_SDK_MAJOR
+ARG ZED_SDK_MINOR
+ARG ROS_DISTRO
+
+SHELL ["/bin/bash", "-c"]
+
+ENV NVIDIA_DRIVER_CAPABILITIES \
+    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
+
+# Setup the ZED SDK
+RUN echo "Europe/Paris" > /etc/localtime ; echo "CUDA Version ${CUDA_MAJOR}.${CUDA_MINOR}.0" > /usr/local/cuda/version.txt && \
+    apt-get update -y || true && \
+    apt-get install --no-install-recommends dialog bash-completion lsb-release wget less udev sudo  build-essential cmake zstd python3 python3-pip libpng-dev libgomp1 -y && \
+    python3 -m pip install --upgrade pip; python3 -m pip install numpy opencv-python-headless && \
+    wget -q -O ZED_SDK_Linux_Ubuntu.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}${CUDA_MINOR}/ubuntu${UBUNTU_RELEASE_YEAR} && \
+    chmod +x ZED_SDK_Linux_Ubuntu.run && \
+    ./ZED_SDK_Linux_Ubuntu.run -- silent skip_tools skip_cuda && \
+    ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so && \
+    rm ZED_SDK_Linux_Ubuntu.run && \
+    rm -rf /var/lib/apt/lists/*
+    
+# ROS install
+ENV ROS_DISTRO $ROS_DISTRO
+RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" > /etc/apt/sources.list.d/ros2-latest.list && \
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
+    apt-get update && \ 
+    apt-get install -y --no-install-recommends \
+    ros-$ROS_DISTRO-ros-core \
+    && rm -rf /var/lib/apt/lists/*
+
+# ZED setup
+RUN apt-get update || true && \
+    apt-get install --no-install-recommends -y \
+        ros-${ROS_DISTRO}-ros-base \
+        ros-${ROS_DISTRO}-ament-cmake-clang-format \
+        ros-${ROS_DISTRO}-image-transport \
+        ros-${ROS_DISTRO}-image-transport-plugins \
+        ros-${ROS_DISTRO}-diagnostic-updater \
+        ros-${ROS_DISTRO}-xacro \
+        python3-flake8-docstrings \
+        python3-pip \
+        python3-pytest-cov \
+        ros-dev-tools && \
+    pip3 install \
+        argcomplete \
+        numpy \
+        empy \
+        lark && \
+    rm -rf /var/lib/apt/lists/*
+
+# Check dependencies
+WORKDIR /ros2_ws
+RUN apt-get update && \
+    source /opt/ros/$ROS_DISTRO/setup.bash && \
+    rosdep init && \
+    rosdep update --rosdistro $ROS_DISTRO && \
+    rosdep install --from-paths src -y -i && \
+    rm -rf /var/lib/apt/lists/*
+
+# Setup DDS
+RUN apt-get update && apt-get install -y \
+        ros-$ROS_DISTRO-rmw-fastrtps-cpp \
+        ros-$ROS_DISTRO-rmw-cyclonedds-cpp && \
+    apt-get upgrade -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Git action version
+RUN echo $(cat /ros2_ws/src/zed-ros2-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
+
+# Setup environment variables
+COPY ./ros_entrypoint.sh /ros_entrypoint.sh
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]
