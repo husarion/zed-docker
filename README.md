@@ -44,9 +44,8 @@ docker pull ${ZED_IMAGE}
 **Running on desktop**
 
 ```bash
-docker run --runtime nvidia -it --privileged --ipc=host --pid=host -e DISPLAY \
-  -v /dev/shm:/dev/shm -v /tmp/.X11-unix/:/tmp/.X11-unix \
-  -v /tmp/zed_ai/:/usr/local/zed/resources/ \
+docker run --runtime nvidia -it --privileged \
+  -v /dev/shm:/dev/shm -v /tmp/zed_ai/:/usr/local/zed/resources/ \
   ${ZED_IMAGE} \
   ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
 ```
