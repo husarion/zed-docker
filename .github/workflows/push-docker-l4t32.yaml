@@ -1,0 +1,41 @@
+name: Push builded Docker image
+
+on:
+  workflow_dispatch:
+    imputs:
+      image_name:
+        description: "Type Docker image name to push"
+        type: string
+        default: "zed_image:latest"
+
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        uses: docker/setup-docker@v1
+
+      - name: Build and Push Docker image
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push ${{ inputs.image_name }}
+
+          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic
+          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-nightly
+          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0
+          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517
+          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517-stable
+        
+          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic
+          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic-nightly
+          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0
+          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517
+          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517-stable
