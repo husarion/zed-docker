@@ -172,6 +172,9 @@ RUN apt-get update && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
 
+# Git action version
+RUN echo $(cat /ros2_ws/src/zed-ros2-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
+
 # Setup environment variables
 COPY ./ros_entrypoint.sh /ros_entrypoint.sh
 ENTRYPOINT ["/ros_entrypoint.sh"]
