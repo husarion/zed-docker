@@ -1,4 +1,4 @@
-name: Basic Build/Push ROS Docker Image
+name: Basic Build & Push
 
 on:
   workflow_dispatch:
@@ -50,10 +50,10 @@ jobs:
           context: ./temp
           push: true
           build-args: |
-            ROS_DISTRO=${{ matrix.target_distro }}
+            ROS_DISTRO=${{ matrix.ros_distro }}
           tags: |
-            husarion/${{ matrix.repo_name }}:${{ matrix.target_distro }}
-            husarion/${{ matrix.repo_name }}:${{ matrix.target_distro }}-nightly
-            husarion/${{ matrix.repo_name }}:${{ matrix.target_distro }}-${{ inputs.target_release }}
-            husarion/${{ matrix.repo_name }}:${{ matrix.target_distro }}-${{ inputs.target_release }}-${{ env.SHORT_DATE }}
-            husarion/${{ matrix.repo_name }}:${{ matrix.target_distro }}-${{ inputs.target_release }}-${{ env.SHORT_DATE }}-stable
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}-nightly
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}-${{ inputs.target_release }}
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}-${{ inputs.target_release }}-${{ env.SHORT_DATE }}
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}-${{ inputs.target_release }}-${{ env.SHORT_DATE }}-stable
