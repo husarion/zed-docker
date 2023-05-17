@@ -2,7 +2,7 @@ name: Push builded Docker image
 
 on:
   workflow_dispatch:
-    imputs:
+    inputs:
       image_name:
         description: "Type Docker image name to push"
         type: string
