@@ -17,9 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Docker
-        uses: docker/setup-docker@v1
-
       - name: Build and Push Docker image
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
