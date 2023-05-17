@@ -3,11 +3,18 @@ name: Push builded Docker image
 on:
   workflow_dispatch:
     inputs:
-      image_name:
-        description: "Type Docker image name to push"
+      input_image:
+        description: "Type Docker local image to push"
         type: string
         default: "zed_image:latest"
-
+      repo_name:
+        description: "Type DockerHub repo name"
+        type: string
+        default: "repo_name"
+      distro:
+        description: "Type ROS distribution"
+        type: string
+        default: "melodic"
 
 jobs:
   build-and-push:
@@ -16,6 +23,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Set SHORT_DATE env
+        run: echo "SHORT_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+        shell: bash
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -26,14 +37,14 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic
-          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic-nightly
-          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic-3.5.0
-          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic-3.5.0-20230517
-          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic-3.5.0-20230517-stable
+          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}
+          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-nightly
+          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0
+          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0-${{ env.SHORT_DATE }}
+          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0-${{ env.SHORT_DATE }}-stable
         
-          docker push husarion/zed-jetson:melodic
-          docker push husarion/zed-jetson:melodic-nightly
-          docker push husarion/zed-jetson:melodic-3.5.0
-          docker push husarion/zed-jetson:melodic-3.5.0-20230517
-          docker push husarion/zed-jetson:melodic-3.5.0-20230517-stable
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-nightly
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0-${{ env.SHORT_DATE }}
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0-${{ env.SHORT_DATE }}-stable
