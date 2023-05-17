@@ -3,15 +3,15 @@ name: Push builded Docker image
 on:
   workflow_dispatch:
     inputs:
-      input_image:
-        description: "Type Docker local image to push"
+      dockerfile:
+        description: "Type Dockerfile name inside the repo"
         type: string
-        default: "zed_image:latest"
+        default: "Dockerfile.jetson_l4t32"
       repo_name:
-        description: "Type DockerHub repo name"
+        description: "Type DockerHub repository name"
         type: string
-        default: "repo_name"
-      distro:
+        default: "zed-jetson"
+      ros_distro:
         description: "Type ROS distribution"
         type: string
         default: "melodic"
@@ -35,16 +35,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Echo variable:
+        run: echo "Repository ${{ github.repository }} \n ENV
+        shell: 
+
       - name: Build and Push Docker image
         run: |
-          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}
-          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-nightly
-          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0
-          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0-${{ env.SHORT_DATE }}
-          docker tag ${{ inputs.input_image }} husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0-${{ env.SHORT_DATE }}-stable
+          docker build -t zed ${{ github.repository }}/${{ github.ref }}/${{ inputs.dockerfile }}
+          
+          docker tag zed husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}
+          docker tag zed husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}-nightly
+          docker tag zed husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}-3.5.0
+          docker tag zed husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}-3.5.0-${{ env.SHORT_DATE }}
+          docker tag zed husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}-3.5.0-${{ env.SHORT_DATE }}-stable
         
-          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}
-          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-nightly
-          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0
-          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0-${{ env.SHORT_DATE }}
-          docker push husarion/${{ inputs.repo_name }}:${{ inputs.distro }}-3.5.0-${{ env.SHORT_DATE }}-stable
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}-nightly
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}-3.5.0
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}-3.5.0-${{ env.SHORT_DATE }}
+          docker push husarion/${{ inputs.repo_name }}:${{ inputs.ros_distro }}-3.5.0-${{ env.SHORT_DATE }}-stable
