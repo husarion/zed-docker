@@ -13,7 +13,7 @@ Available repos
 
 **ROS2:**
 - **`husarion/zed-desktop:humble`** for desktop platform with CUDA (tested on platform with 11.7).
-- **`husarion/zed-jetson:humble`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
+- **`husarion/zed-jetson:foxy`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
 
 ## Prepare environment
 
@@ -59,3 +59,7 @@ export DISPLAY=:1
 xhost local:root
 docker compose up
 ```
+
+## Issue
+
+Docker Buildkit doesn't support build image with Nvidia runtime, so there is dedicated action for pushing locally building image from Jetson.  
