@@ -26,14 +26,14 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic
-          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-nightly
-          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0
-          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517
-          docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517-stable
+          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic
+          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic-nightly
+          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic-3.5.0
+          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic-3.5.0-20230517
+          docker tag ${{ inputs.image_name }} husarion/zed-jetson:melodic-3.5.0-20230517-stable
         
-          docker image push husarion/zed_jetson:melodic
-          docker image push husarion/zed_jetson:melodic-nightly
-          docker image push husarion/zed_jetson:melodic-3.5.0
-          docker image push husarion/zed_jetson:melodic-3.5.0-20230517
-          docker image push husarion/zed_jetson:melodic-3.5.0-20230517-stable
+          docker push husarion/zed-jetson:melodic
+          docker push husarion/zed-jetson:melodic-nightly
+          docker push husarion/zed-jetson:melodic-3.5.0
+          docker push husarion/zed-jetson:melodic-3.5.0-20230517
+          docker push husarion/zed-jetson:melodic-3.5.0-20230517-stable
