@@ -1,0 +1,60 @@
+name: Basic Build & Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_release:
+        description: "Specify the version of the existing docker image (eg. 1.0.12)"
+        type: string
+        default: "0.0.0"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+
+        include:
+          - dockerfile: Dockerfile.desktop
+            repo_name: "zed-desktop"
+            platforms: "linux/amd64"
+            ros_distro: "humble"
+            runner: ubuntu-latest
+          - dockerfile: Dockerfile.jetson
+            repo_name: "zed-jetson"
+            platforms: "linux/arm64"
+            ros_distro: "foxy"
+            runner: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set SHORT_DATE env
+        run: echo "SHORT_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          file: ${{ matrix.dockerfile }}
+          platforms: ${{ matrix.platforms }}
+          push: true
+          build-args: |
+            ROS_DISTRO=${{ matrix.ros_distro }}
+            PREFIX=${{ matrix.prefix }}
+          tags: |
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}-nightly
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}-${{ inputs.target_release }}
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}-${{ inputs.target_release }}-${{ env.SHORT_DATE }}
+            husarion/${{ matrix.repo_name }}:${{ matrix.ros_distro }}-${{ inputs.target_release }}-${{ env.SHORT_DATE }}-stable
