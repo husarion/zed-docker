@@ -23,15 +23,15 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          
+
           docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic
           docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-nightly
           docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0
           docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517
           docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517-stable
         
-          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic
-          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic-nightly
-          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0
-          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517
-          docker push ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517-stable
+          docker push husarion/zed_jetson:melodic
+          docker push husarion/zed_jetson:melodic-nightly
+          docker push husarion/zed_jetson:melodic-3.5.0
+          docker push husarion/zed_jetson:melodic-3.5.0-20230517
+          docker push husarion/zed_jetson:melodic-3.5.0-20230517-stable
