@@ -18,11 +18,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build and Push Docker image
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
           docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic
           docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-nightly
@@ -30,8 +27,8 @@ jobs:
           docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517
           docker tag ${{ inputs.image_name }} husarion/zed_jetson:melodic-3.5.0-20230517-stable
         
-          docker push husarion/zed_jetson:melodic
-          docker push husarion/zed_jetson:melodic-nightly
-          docker push husarion/zed_jetson:melodic-3.5.0
-          docker push husarion/zed_jetson:melodic-3.5.0-20230517
-          docker push husarion/zed_jetson:melodic-3.5.0-20230517-stable
+          docker image push husarion/zed_jetson:melodic
+          docker image push husarion/zed_jetson:melodic-nightly
+          docker image push husarion/zed_jetson:melodic-3.5.0
+          docker image push husarion/zed_jetson:melodic-3.5.0-20230517
+          docker image push husarion/zed_jetson:melodic-3.5.0-20230517-stable
