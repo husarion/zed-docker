@@ -15,10 +15,9 @@ Available repos
 - **`husarion/zed-desktop:humble`** for desktop platform with CUDA (tested on platform with 11.7).
 - **`husarion/zed-jetson:foxy`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
 
-
 > **INFO:**
 >
-> First running of **ROS 2** Docker image download configuration files and optimize camera it may take few minuts. That's why you should remember about mounting a volumen inside the container.
+> First running of **ROS 2** Docker images, download configuration files and optimize camera. It may take few minuts. That's why you should remember about mounting a volumen inside the container.
 
 ## Prepare environment
 
