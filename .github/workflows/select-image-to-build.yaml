@@ -1,4 +1,4 @@
-name: Selected Docker Image Build & Push 
+name: Selected Docker Image Build & Push
 
 on:
   workflow_dispatch:
@@ -23,8 +23,7 @@ on:
         type: choice
         options:
           - ubuntu-latest
-          - jetson   
-
+          - jetson
 
 jobs:
   build:
@@ -34,13 +33,13 @@ jobs:
       - name: Set variables
         run: |
           if [[ "${{ inputs.dockerfile }}" == "desktop" ]]; then
-            echo "REPO_NAME=zed-desktop" >> $GITHUB_ENV            echo "REPO_NAME=zed-desktop" >> $GITHUB_ENV
+            echo "REPO_NAME=zed-desktop" >> $GITHUB_ENV
             echo "ROS_DISTRO=noetic" >> $GITHUB_ENV
             echo "PLATFORM=linux/amd64" >> $GITHUB_ENV
           elif [[ "${{ inputs.dockerfile }}" == "cpu" ]]; then
             echo "REPO_NAME=zed-desktop-cpu" >> $GITHUB_ENV
             echo "ROS_DISTRO=noetic" >> $GITHUB_ENV
-            echo "PLATFORM=[linux/amd64, linux/arm64, linux/arm64/v8]" >> $GITHUB_ENV
+            echo "PLATFORM=linux/amd64,linux/arm64,linux/arm64/v8" >> $GITHUB_ENV
           elif [[ "${{ inputs.dockerfile }}" == "jetson" ]]; then
             echo "REPO_NAME=zed-jetson" >> $GITHUB_ENV
             echo "ROS_DISTRO=noetic" >> $GITHUB_ENV
@@ -50,16 +49,6 @@ jobs:
             echo "ROS_DISTRO=melodic" >> $GITHUB_ENV
             echo "PLATFORM=linux/arm64" >> $GITHUB_ENV
           fi
-
-
-    strategy:
-      fail-fast: false
-      matrix:
-
-        include:
-          - platform: ${{ env.PLATFORM }}
-
-    steps:
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -78,8 +67,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
+          context: .
           file: ${{ inputs.dockerfile }}
-          platforms: ${{ matrix.platform }}
+          platforms: ${{ env.PLATFORM }}
           push: true
           build-args: |
             ROS_DISTRO=${{ env.ROS_DISTRO }}
