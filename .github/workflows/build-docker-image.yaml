@@ -43,6 +43,11 @@ jobs:
             platforms: "linux/amd64"
             ros_distro: "noetic"
             runner: ubuntu-latest
+          - dockerfile: Dockerfile.cpu
+            repo_name: "zed-desktop-cpu"
+            platforms: ["linux/amd64", "linux/arm64", "linux/arm64/v8"]
+            ros_distro: "noetic"
+            runner: ubuntu-latest
           - dockerfile: Dockerfile.jetson
             repo_name: "zed-jetson"
             platforms: "linux/arm64"
