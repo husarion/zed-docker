@@ -20,7 +20,7 @@ Available repos
 
 > **INFO:**
 >
-> First running of **ROS 2** Docker images, download configuration files and optimize camera. It may take few minuts. That's why you should remember about mounting a volumen inside the container.
+> First run of **ROS 2** Docker images downloads configuration files and camera optimization. This may take several minutes. Therefore, remember to mount the volume inside the container.
 
 ## Prepare environment
 
