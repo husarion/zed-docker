@@ -1,0 +1,28 @@
+services:
+        
+  zed:
+    image: zed_ros2
+    container_name: zed
+    network_mode: host
+    ipc: host
+    volumes:
+      - /dev:/dev 
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}
+    privileged: true
+    command: ros2 launch zed_cpu zed.launch
+
+  rviz:
+    image: husarion/rviz2:humble
+    container_name: rviz2
+    network_mode: host
+    ipc: host
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./default.rviz:/root/.rviz2/default.rviz
+    environment:
+      - DISPLAY=${DISPLAY:?err}
+      - LIBGL_ALWAYS_SOFTWARE=1
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}
