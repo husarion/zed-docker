@@ -16,6 +16,7 @@ Available repos
 
 **ROS2:**
 - **`husarion/zed-desktop:humble`** for desktop platform with CUDA (tested on platform with 11.7).
+- **`husarion/zed-desktop-cpu:humble`** a simple demo version on the CPU, allowing you to check if the camera and IMU are working properly. Image dedicated to platforms with amd64 and arm64 architecture.
 - **`husarion/zed-jetson:foxy`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
 
 > **INFO:**
@@ -69,7 +70,6 @@ a) **Running with CUDA** - connect ZED camera to your platform, `export CAMERA_M
 
 ```bash
 cd demo
-export DISPLAY=:1
 xhost local:root
 docker compose up
 ```
@@ -78,10 +78,10 @@ b) **Running on CPU** - connect ZED camera to your platform, `export CAMERA_MODE
 
 ```bash
 cd demo
-export DISPLAY=:1
 xhost local:root
-docker compose -f demo/compose-cpu.yaml up
+docker compose -f compose-cpu.yaml up
 ```
+
 ## Known issue
 
 Docker Buildkit doesn't support build image with Nvidia runtime, so there is dedicated action for pushing locally building image from Jetson.  
