@@ -1,7 +1,7 @@
 services:
         
   zed:
-    image: zed_ros2
+    image: husarion/zed-desktop-cpu:humble
     container_name: zed
     network_mode: host
     ipc: host
@@ -20,7 +20,6 @@ services:
     ipc: host
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ./default.rviz:/root/.rviz2/default.rviz
     environment:
       - DISPLAY=${DISPLAY:?err}
       - LIBGL_ALWAYS_SOFTWARE=1
