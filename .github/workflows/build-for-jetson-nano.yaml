@@ -31,10 +31,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Echo variable:
-        run: echo "Repository ${{ github.repository }} \n ENV
-        shell: 
-
       - name: Build and Push Docker image
         run: |
           docker build -t zed ${{ github.repository }}/${{ github.ref }}/${{ inputs.dockerfile }}
