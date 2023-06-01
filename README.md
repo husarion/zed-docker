@@ -53,7 +53,7 @@ a) **Running with CUDA** (for `husarion/zed-desktop` or `husarion/zed-jetson` im
 ```bash
 docker run --runtime nvidia -it --privileged -v /dev/shm:/dev/shm  \
   ${ZED_IMAGE} \
-  roslaunch zed_wrapper ${CAMERA_MODEL}.launch
+  ros2 launch zed_wrapper ${CAMERA_MODEL}.launch
 ```
 
 b) **Running on CPU** (for `husarion/zed-desktop-cpu` images)

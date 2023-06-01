@@ -1,7 +1,7 @@
 ARG ROS_DISTRO=humble
 ARG PREFIX=
 
-FROM husarnet/ros:${PREFIX}${ROS_DISTRO}-ros-base AS pkg-builder
+FROM husarnet/ros:${PREFIX}${ROS_DISTRO}-ros-base
 
 SHELL ["/bin/bash", "-c"]
 
@@ -17,7 +17,7 @@ RUN apt-get update && apt install -y \
 # Workspace & dependencies
 WORKDIR /ros2_ws
 RUN apt-get update && \
-    git clone -b ros2-dev https://github.com/husarion/zed_cpu.git src/zed_cpu && \
+    git clone -b ros2 https://github.com/husarion/zed_cpu.git src/zed_cpu && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
     rosdep install --from-paths src -y -i && \
     cd src/zed_cpu/udev && \
