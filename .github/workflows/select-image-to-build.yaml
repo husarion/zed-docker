@@ -51,6 +51,7 @@ jobs:
             echo "REPO_NAME=zed-jetson" >> $GITHUB_ENV
             echo "ROS_DISTRO=noetic" >> $GITHUB_ENV
             echo "PLATFORM=linux/arm64" >> $GITHUB_ENV
+          fi
 
       - name: Checkout repository
         uses: actions/checkout@v2
