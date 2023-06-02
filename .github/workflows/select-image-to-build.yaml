@@ -51,6 +51,7 @@ jobs:
             echo "REPO_NAME=zed-jetson" >> $GITHUB_ENV
             echo "ROS_DISTRO=foxy" >> $GITHUB_ENV
             echo "PLATFORM=linux/arm64" >> $GITHUB_ENV
+          fi
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -61,7 +62,7 @@ jobs:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
           main_branch_name: ros2
-          dockerfile: ${{ inputs.dockerfile }}
+          dockerfile: Dockerfile.${{ inputs.dockerfile }}
           repo_name: ${{ env.REPO_NAME }}
           build_type: ${{ inputs.build_type }}
           ros_distro: ${{ env.ROS_DISTRO }}
