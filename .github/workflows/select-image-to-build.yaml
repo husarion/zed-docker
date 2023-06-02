@@ -62,7 +62,7 @@ jobs:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
           main_branch_name: ros1
-          dockerfile: ${{ inputs.dockerfile }}
+          dockerfile: Dockerfile.${{ inputs.dockerfile }}
           repo_name: ${{ env.REPO_NAME }}
           build_type: ${{ inputs.build_type }}
           ros_distro: ${{ env.ROS_DISTRO }}
