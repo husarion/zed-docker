@@ -1,17 +1,17 @@
 services:
         
   zed:
-    image: ${ZED_IMAGE}
+    image: husarion/zed-desktop-cpu:humble
     container_name: zed
     network_mode: host
     ipc: host
-    runtime: nvidia
     volumes:
-      - ./params:/ros_ws/src/zed-ros-wrapper/zed_wrapper/params
-      - /dev/shm:/dev/shm
-      - /tmp/zed_ai/:/usr/local/zed/resources/
+      - /dev:/dev 
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}
     privileged: true
-    command: ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
+    command: ros2 launch zed_cpu zed.launch
 
   rviz:
     image: husarion/rviz2:humble
