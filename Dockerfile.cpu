@@ -1,0 +1,35 @@
+ARG ROS_DISTRO=noetic
+
+FROM ros:$ROS_DISTRO
+
+SHELL ["/bin/bash", "-c"]
+
+# Install tools
+RUN apt-get update && apt install -y \
+        git \
+        libhidapi-libusb0 \
+        libopencv-viz-dev \
+        udev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Workspace & dependencies
+WORKDIR /ros_ws
+RUN apt-get update && \
+    git clone -b ros1 https://github.com/husarion/zed_cpu.git src/zed_cpu && \
+    source /opt/ros/$ROS_DISTRO/setup.bash && \
+    rosdep install --from-paths src -y -i && \
+    cd src/zed_cpu/udev && \
+    bash install_udev_rule.sh && \
+    rm -rf /var/lib/apt/lists/*
+
+# Build
+RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
+    catkin_make -DCMAKE_BUILD_TYPE=Release
+
+# Git action version
+RUN echo $(cat /ros_ws/src/zed_cpu/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
+
+# Setup entrypoint
+COPY ./ros_entrypoint.sh /
+ENTRYPOINT ["/ros_entrypoint.sh"]

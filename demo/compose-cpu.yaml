@@ -1,0 +1,22 @@
+services:
+        
+  zed:
+    image: husarion/zed-desktop-cpu:noetic
+    container_name: zed
+    network_mode: host
+    volumes:
+      - /dev:/dev 
+    privileged: true
+    command: roslaunch zed_cpu zed.launch
+
+  rviz:
+    image: husarion/rviz:noetic
+    container_name: rviz
+    network_mode: host
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./default.rviz:/default.rviz
+    environment:
+      - DISPLAY
+      - LIBGL_ALWAYS_SOFTWARE=1
+    command: sh -c 'sleep 1; while ! rostopic list | grep -q /rosout; do sleep 1; done && rosrun rviz rviz -d /default.rviz'

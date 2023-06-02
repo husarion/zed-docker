@@ -1,8 +1,17 @@
-name: Build/Publish ROS Docker Image 
+name: Selected Docker Image Build & Push
 
 on:
   workflow_dispatch:
     inputs:
+      dockerfile:
+        description: "Type Dockerfile version to build"
+        required: true
+        default: "cpu"
+        type: choice
+        options:
+          - cpu
+          - desktop
+          - jetson   
       build_type:
         description: "Is it a \"development\" or a \"stable\" release?"
         required: true
@@ -23,40 +32,27 @@ on:
         description: "In case of \"stable\" release specify the date of the existing docker image in format YYYYMMDD (eg. 20220124)"
         type: string
         default: "20131206"
-  repository_dispatch:
-    types: [rebuild]
-  pull_request:
-    types:
-      - closed
-      - opened
-
 jobs:
   build:
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-
-        include:
-          - dockerfile: Dockerfile.desktop
-            repo_name: "zed-desktop"
-            platforms: "linux/amd64"
-            ros_distro: "noetic"
-            runner: ubuntu-latest
-          - dockerfile: Dockerfile.jetson
-            repo_name: "zed-jetson"
-            platforms: "linux/arm64"
-            ros_distro: "noetic"
-            runner: ubuntu-latest
-          - dockerfile: Dockerfile.jetson_l4t32
-            repo_name: "zed-jetson"
-            platforms: "linux/arm64"
-            ros_distro: "melodic"
-            runner: jetson
+    runs-on: ubuntu-latest
 
     steps:
+      - name: Set variables
+        run: |
+          if [[ "${{ inputs.dockerfile }}" == "desktop" ]]; then
+            echo "REPO_NAME=zed-desktop" >> $GITHUB_ENV
+            echo "ROS_DISTRO=noetic" >> $GITHUB_ENV
+            echo "PLATFORM=linux/amd64" >> $GITHUB_ENV
+          elif [[ "${{ inputs.dockerfile }}" == "cpu" ]]; then
+            echo "REPO_NAME=zed-desktop-cpu" >> $GITHUB_ENV
+            echo "ROS_DISTRO=noetic" >> $GITHUB_ENV
+            echo "PLATFORM=linux/amd64, linux/arm64" >> $GITHUB_ENV
+          elif [[ "${{ inputs.dockerfile }}" == "jetson" ]]; then
+            echo "REPO_NAME=zed-jetson" >> $GITHUB_ENV
+            echo "ROS_DISTRO=noetic" >> $GITHUB_ENV
+            echo "PLATFORM=linux/arm64" >> $GITHUB_ENV
 
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Build Docker Image
@@ -65,11 +61,11 @@ jobs:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_token:  ${{ secrets.DOCKERHUB_TOKEN }}
           main_branch_name: ros1
-          dockerfile: ${{ matrix.dockerfile }}
-          repo_name: ${{ matrix.repo_name }}
+          dockerfile: ${{ inputs.dockerfile }}
+          repo_name: ${{ env.REPO_NAME }}
           build_type: ${{ inputs.build_type }}
-          ros_distro: ${{ matrix.ros_distro }}
-          platforms: ${{ matrix.platforms }}
+          ros_distro: ${{ env.ROS_DISTRO }}
+          platforms: ${{ env.PLATFORM }}
           # variables important only for stable release
           target_distro: ${{ inputs.target_distro }}
           target_release: ${{ inputs.target_release }}
