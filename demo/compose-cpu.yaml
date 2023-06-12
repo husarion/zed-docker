@@ -20,6 +20,7 @@ services:
     ipc: host
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./default_cpu.rviz:/root/.rviz2/default.rviz
     environment:
       - DISPLAY=${DISPLAY:?err}
       - LIBGL_ALWAYS_SOFTWARE=1
