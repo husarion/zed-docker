@@ -1,5 +1,4 @@
 services:
-        
   zed:
     image: ${ZED_IMAGE}
     container_name: zed
@@ -7,9 +6,11 @@ services:
     ipc: host
     runtime: nvidia
     volumes:
-      - ./params:/ros_ws/src/zed-ros-wrapper/zed_wrapper/params
+      - ./params:/ros2_ws/src/zed-ros-wrapper/zed_wrapper/params
       - /dev/shm:/dev/shm
       - /tmp/zed_ai/:/usr/local/zed/resources/
+      # Uncomment the volume below to run demo with ZED X
+      # - /tmp/argus_socket:/tmp/argus_socket
     privileged: true
     command: ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
 
