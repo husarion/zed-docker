@@ -44,7 +44,7 @@ RUN echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_rel
 ENV ROS_DISTRO $ROS_DISTRO
 RUN echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
-    apt-get update && \ 
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     ros-$ROS_DISTRO-ros-core \
     && rm -rf /var/lib/apt/lists/*
@@ -84,7 +84,7 @@ RUN apt-get update && \
     rosdep update --rosdistro $ROS_DISTRO && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
-    
+
 # Build
 WORKDIR /ros2_ws
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
@@ -132,7 +132,7 @@ RUN echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_rel
 ENV ROS_DISTRO $ROS_DISTRO
 RUN echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
-    apt-get update && \ 
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     ros-$ROS_DISTRO-ros-core \
     && rm -rf /var/lib/apt/lists/*
@@ -146,6 +146,7 @@ RUN apt-get update || true && \
         ros-${ROS_DISTRO}-image-transport-plugins \
         ros-${ROS_DISTRO}-diagnostic-updater \
         ros-${ROS_DISTRO}-xacro \
+        ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
         build-essential \
         git \
         python3-colcon-common-extensions \
@@ -171,6 +172,9 @@ RUN apt-get update && \
     rosdep update --rosdistro $ROS_DISTRO && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
+
+# Source workspace when docker exec -it <container> bash
+RUN test -f "/ros2_ws/install/setup.bash" && echo "source /ros2_ws/install/setup.bash" >> /etc/bash.bashrc
 
 # Git action version
 RUN echo $(cat /ros2_ws/src/zed-ros2-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
