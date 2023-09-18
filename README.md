@@ -32,7 +32,7 @@ export ZED_IMAGE=<zed_image>
 export CAMERA_MODEL=<camera_model>
 ```
 
-> ![IMPORTANT]
+> [!NOTE]
 > To run ZED X camera with Jetson Orin Nano install the ZED X Driver. Follow the official tutorial [Setting up ZED X on Orin Nano / NX Developer Kits](https://www.stereolabs.com/docs/get-started-with-zed-x/jetson-orin-devkit-setup/) from Stereolabs.
 
 ## Development
