@@ -62,7 +62,8 @@ docker run --runtime nvidia -it --privileged -v /dev/shm:/dev/shm  \
 In case of ZED X camera with Jetson Orin Nano:
 
 ```bash
-docker run --runtime nvidia -it --privileged -v /dev/shm:/dev/shm -v /tmp/argus_socket:/tmp/argus_socket \
+docker run --runtime nvidia -it --privileged -v /dev/shm:/dev/shm \
+  -v /tmp/argus_socket:/tmp/argus_socket \
   ${ZED_IMAGE} \
   ros2 launch zed_wrapper zedx.launch.py
 ```
