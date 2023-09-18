@@ -9,6 +9,19 @@ ARG ZED_SDK_MAJOR=4
 ARG ZED_SDK_MINOR=0
 ARG ROS_DISTRO=foxy
 
+### DOWNLOAD HUSARNET ###
+FROM ubuntu:20.04 AS husarnet-dds-getter
+
+ARG TARGETARCH
+ARG HUSARNET_DDS_RELEASE="v1.3.5"
+
+ENV HUSARNET_DDS_DEBUG=FALSE
+
+RUN apt update && apt install -y \
+        curl
+
+RUN curl -L https://github.com/husarnet/husarnet-dds/releases/download/${HUSARNET_DDS_RELEASE}/husarnet-dds-linux-${TARGETARCH} -o /usr/bin/husarnet-dds
+
 ### BUILD IMAGE ###
 FROM nvcr.io/nvidia/l4t-cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-devel AS build
 
@@ -180,6 +193,8 @@ RUN test -f "/ros2_ws/install/setup.bash" && echo "source /ros2_ws/install/setup
 RUN echo $(cat /ros2_ws/src/zed-ros2-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
 
 # Setup environment variables
+COPY --from=husarnet-dds-getter /usr/bin/husarnet-dds /usr/bin/husarnet-dds
+RUN chmod +x /usr/bin/husarnet-dds
 COPY ./ros_entrypoint.sh /ros_entrypoint.sh
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]
