@@ -32,6 +32,9 @@ export ZED_IMAGE=<zed_image>
 export CAMERA_MODEL=<camera_model>
 ```
 
+> ![IMPORTANT]
+> To run ZED X camera with Jetson Orin Nano install the ZED X Driver. Follow the official tutorial [Setting up ZED X on Orin Nano / NX Developer Kits](https://www.stereolabs.com/docs/get-started-with-zed-x/jetson-orin-devkit-setup/) from Stereolabs.
+
 ## Development
 
 ### Get image
@@ -53,8 +56,17 @@ a) **Running with CUDA** (for `husarion/zed-desktop` or `husarion/zed-jetson` im
 ```bash
 docker run --runtime nvidia -it --privileged -v /dev/shm:/dev/shm  \
   ${ZED_IMAGE} \
-  ros2 launch zed_wrapper ${CAMERA_MODEL}.launch
+  ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
 ```
+
+In case of ZED X camera with Jetson Orin Nano:
+
+```bash
+docker run --runtime nvidia -it --privileged -v /dev/shm:/dev/shm -v /tmp/argus_socket:/tmp/argus_socket \
+  ${ZED_IMAGE} \
+  ros2 launch zed_wrapper zedx.launch.py
+```
+
 
 b) **Running on CPU** (for `husarion/zed-desktop-cpu` images)
 
@@ -68,6 +80,7 @@ docker run -it --privileged -v /dev:/dev  \
 
 a) **Running with CUDA** - connect ZED camera to your platform, `export CAMERA_MODEL` and run following commands:
 
+In case of ZED X camera with Jetson Orin Nano uncomment `/tmp/argus_socket:/tmp/argus_socket` line in the `compose.yaml` file.
 ```bash
 cd demo
 xhost local:root
@@ -84,4 +97,4 @@ docker compose -f compose-cpu.yaml up
 
 ## Known issue
 
-Docker Buildkit doesn't support build image with Nvidia runtime, so there is dedicated action for pushing locally building image from Jetson.  
+Docker Buildkit doesn't support build image with Nvidia runtime, so there is dedicated action for pushing locally building image from Jetson.
