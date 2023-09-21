@@ -55,19 +55,10 @@ a) **Running with CUDA** (for `husarion/zed-desktop` or `husarion/zed-jetson` im
 
 ```bash
 docker run --runtime nvidia -it --privileged -v /dev/shm:/dev/shm  \
+  -v /tmp/argus_socket:/tmp/argus_socket \
   ${ZED_IMAGE} \
   ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
 ```
-
-In case of ZED X camera with Jetson Orin Nano:
-
-```bash
-docker run --runtime nvidia -it --privileged -v /dev/shm:/dev/shm \
-  -v /tmp/argus_socket:/tmp/argus_socket \
-  ${ZED_IMAGE} \
-  ros2 launch zed_wrapper zedx.launch.py
-```
-
 
 b) **Running on CPU** (for `husarion/zed-desktop-cpu` images)
 
@@ -81,7 +72,6 @@ docker run -it --privileged -v /dev:/dev  \
 
 a) **Running with CUDA** - connect ZED camera to your platform, `export CAMERA_MODEL` and run following commands:
 
-In case of ZED X camera with Jetson Orin Nano uncomment `/tmp/argus_socket:/tmp/argus_socket` line in the `compose.yaml` file.
 ```bash
 cd demo
 xhost local:root
