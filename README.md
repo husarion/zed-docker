@@ -2,11 +2,12 @@
   Docker Images for ZED Camera
 </h1>
 
-The repository contains a GitHub Actions workflow for auto-deployment of built Docker images to [husarion/zed_desktop](https://hub.docker.com/r/husarion/zed-desktop) and [husarion/zed_jetson](https://hub.docker.com/r/husarion/zed-jetson) Docker Hub repositories.
+The repository contains a GitHub Actions workflow for auto-deployment of built Docker images to [husarion/zed_desktop](https://hub.docker.com/r/husarion/zed-desktop), [husarion/zed_desktop-cpu](https://hub.docker.com/r/husarion/zed-desktop-cpu) and [husarion/zed_jetson](https://hub.docker.com/r/husarion/zed-jetson) Docker Hub repositories.
 
-## Docker image usage
+[![ROS Docker Image](https://github.com/husarion/zed-docker/actions/workflows/ros-docker-image.yaml/badge.svg)](https://github.com/husarion/zed-docker/actions/workflows//ros-docker-image.yaml)
 
-Available repos
+
+## Available repos
 
 **ROS1:**
 - **`husarion/zed-desktop:noetic`** for desktop platform with CUDA (tested on platform with 11.7).
