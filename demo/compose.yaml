@@ -8,10 +8,10 @@ services:
     volumes:
       - ./params:/ros2_ws/src/zed-ros-wrapper/zed_wrapper/params
       - /dev/shm:/dev/shm
-      - /tmp/zed_ai/:/usr/local/zed/resources/
+      - /tmp/zed_ai/:/usr/local/zed/resources/ # Configuration files for quick start
       - /tmp/argus_socket:/tmp/argus_socket
     privileged: true
-    command: ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
+    command: ros2 launch zed_wrapper ${CAMERA_LAUNCH}
 
   rviz:
     image: husarion/rviz2:humble
