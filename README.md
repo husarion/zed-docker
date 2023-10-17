@@ -26,6 +26,15 @@ The repository contains a GitHub Actions workflow for auto-deployment of built D
 
 For best performance please use **USB 3.0** port, depend of the camera model. Then use `lsusb` command to check if the device is visible.
 
+## Demo
+
+**1. Clone repository.**
+
+```bash
+git clone https://github.com/husarion/zed-docker.git
+cd zed-docker/demo
+```
+
 **2. Select your appropriate Docker image**
 
 ```bash
@@ -51,30 +60,21 @@ Replace `<camera_launch>` with appropriate launch file for your camera from belo
 | ZED X             | zedx.launch.py          |
 | ZED X Mini        | zedxm.launch.py         |
 
-> [!NOTE]
+> [!IMPORTANT]
 > To use the ZED X camera, you'll need to install the ZED X Driver additionally. Follow the official tutorial [Setting up ZED X on Orin Nano / NX Developer Kits](https://www.stereolabs.com/docs/get-started-with-zed-x/jetson-orin-devkit-setup/) provided by Stereolabs for detailed instructions.
 
-## Demo
 
-**1. Clone repository.**
-
-```bash
-git clone https://github.com/husarion/zed-docker.git
-cd zed-docker/demo
-```
-
-**2. Run `compose.yaml`**
+**4. Run `compose.yaml`**
 
 ```bash
 xhost local:root
 docker compose up
 ```
 
-> **INFO:**
->
+> [!NOTE]
 > First run of **ROS 2** Docker images downloads configuration files and optimize camera. This may take several minutes.
 
-**3. Configure RViz.**
+**5. Configure RViz.**
 
 Add following topic to RViz:
 - RGB image topic: `/<camera_model>/zed_node/rgb/image_rect_color`
