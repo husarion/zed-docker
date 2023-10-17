@@ -22,9 +22,13 @@ The repository contains a GitHub Actions workflow for auto-deployment of built D
 
 ## Prepare environment
 
-**1. Plugin the camera**
+**Plugin the camera**
 
 For best performance please use **USB 3.0** port, depend of the camera model. Then use `lsusb` command to check if the device is visible.
+
+> [!IMPORTANT]
+> To use the ZED X camera, you'll need to install the ZED X Driver additionally. Follow the official tutorial [Setting up ZED X on Orin Nano / NX Developer Kits](https://www.stereolabs.com/docs/get-started-with-zed-x/jetson-orin-devkit-setup/) provided by Stereolabs for detailed instructions.
+
 
 ## Demo
 
@@ -59,10 +63,6 @@ Replace `<camera_launch>` with appropriate launch file for your camera from belo
 | ZED 2i            | zed2i.launch.py         |
 | ZED X             | zedx.launch.py          |
 | ZED X Mini        | zedxm.launch.py         |
-
-> [!IMPORTANT]
-> To use the ZED X camera, you'll need to install the ZED X Driver additionally. Follow the official tutorial [Setting up ZED X on Orin Nano / NX Developer Kits](https://www.stereolabs.com/docs/get-started-with-zed-x/jetson-orin-devkit-setup/) provided by Stereolabs for detailed instructions.
-
 
 **4. Run `compose.yaml`**
 
