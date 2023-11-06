@@ -44,6 +44,15 @@ cd zed-docker/demo
 ```bash
 export ZED_IMAGE=<zed_image>
 ```
+Replace `<zed_image>` with appropriate Docker imagefrom below table.
+
+<div class="center-table">
+
+| **Docker Image**                   |
+| ---------------------------------- |
+| husarion/zed-jetson:foxy          |
+| husarion/zed-desktop:humble        |
+| husarion/zed-desktop-cpu:humble    |
 
 **3. Select the appropriate launch file**
 
