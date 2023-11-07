@@ -36,12 +36,12 @@ RUN echo "Europe/Paris" > /etc/localtime ; echo "CUDA Version ${CUDA_MAJOR}.${CU
     ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so && \
     rm ZED_SDK_Linux_Ubuntu.run && \
     rm -rf /var/lib/apt/lists/*
-    
+
 # ROS install
 ENV ROS_DISTRO $ROS_DISTRO
 RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
-    apt-get update && \ 
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     ros-$ROS_DISTRO-ros-core \
     && rm -rf /var/lib/apt/lists/*
@@ -75,6 +75,19 @@ RUN apt-get update && \
     rosdep update --rosdistro $ROS_DISTRO && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
+
+# Create health check package
+RUN cd src/ && \
+    source /opt/ros/$ROS_DISTRO/setup.bash && \
+    ros2 pkg create healthcheck_pkg --build-type ament_cmake --dependencies rclcpp std_msgs && \
+    sed -i '/find_package(std_msgs REQUIRED)/a \
+            find_package(sensor_msgs REQUIRED)\n \
+            add_executable(healthcheck_node src/healthcheck.cpp)\n \
+            ament_target_dependencies(healthcheck_node rclcpp std_msgs sensor_msgs)\n \
+            install(TARGETS healthcheck_node DESTINATION lib/${PROJECT_NAME})' \
+            /ros2_ws/src/healthcheck_pkg/CMakeLists.txt
+
+COPY ./healthcheck.cpp /ros2_ws/src/healthcheck_pkg/src/
 
 # Build
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
@@ -112,12 +125,12 @@ RUN echo "Europe/Paris" > /etc/localtime ; echo "CUDA Version ${CUDA_MAJOR}.${CU
     ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so && \
     rm ZED_SDK_Linux_Ubuntu.run && \
     rm -rf /var/lib/apt/lists/*
-    
+
 # ROS install
 ENV ROS_DISTRO $ROS_DISTRO
 RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
-    apt-get update && \ 
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     ros-$ROS_DISTRO-ros-core \
     && rm -rf /var/lib/apt/lists/*
@@ -161,6 +174,9 @@ RUN apt-get update && apt-get install -y \
 
 # Git action version
 RUN echo $(cat /ros2_ws/src/zed-ros2-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
+
+HEALTHCHECK --interval=10s --timeout=5s --start-period=5s --retries=5 \
+    CMD ["/ros_entrypoint.sh", "ros2", "run", "healthcheck_pkg", "healthcheck_node"]
 
 # Setup environment variables
 COPY ./ros_entrypoint.sh /ros_entrypoint.sh
