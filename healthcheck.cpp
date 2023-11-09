@@ -7,12 +7,12 @@ using namespace std::chrono_literals;
 
 #define TIMEOUT 2s
 
-int msg_received = EXIT_FAILURE;
+bool msg_received = false;
 
 void msg_callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
   std::cout << "Message received" << std::endl;
-  msg_received = EXIT_SUCCESS;
+  msg_received = true;
   rclcpp::shutdown();
 }
 
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     auto timer = node->create_wall_timer(TIMEOUT, timeout_callback);
 
     rclcpp::spin(node);
-    return msg_received;
+    return msg_received ? EXIT_SUCCESS : EXIT_FAILURE;
   }
   else
   {
