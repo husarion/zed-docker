@@ -206,7 +206,7 @@ RUN test -f "/ros2_ws/install/setup.bash" && echo "source /ros2_ws/install/setup
 RUN echo $(cat /ros2_ws/src/zed-ros2-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
 
 COPY ./healthcheck.sh /
-HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=5 \
+HEALTHCHECK --interval=10s --timeout=8s --start-period=5s --retries=5 \
     CMD ["/healthcheck.sh"]
 
 # Add Husarnet
