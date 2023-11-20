@@ -18,7 +18,7 @@ void msg_callback(const sensor_msgs::msg::Image::SharedPtr msg) {
   last_msg_time = std::chrono::steady_clock::now();
 }
 
-void healthy_check(const rclcpp::Node::SharedPtr &node) {
+void healthy_check() {
   std::chrono::steady_clock::time_point current_time =
       std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed_time = current_time - last_msg_time;
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 
     while (rclcpp::ok()) {
       rclcpp::spin_some(node);
-      healthy_check(node);
+      healthy_check();
       std::this_thread::sleep_for(LOOP_PERIOD);
     }
   } else {
