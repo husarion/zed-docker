@@ -98,6 +98,18 @@ RUN apt-get update && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
 
+# Create health check package
+RUN cd src/ && \
+    source /opt/ros/$ROS_DISTRO/setup.bash && \
+    ros2 pkg create healthcheck_pkg --build-type ament_cmake --dependencies rclcpp sensor_msgs && \
+    sed -i '/find_package(sensor_msgs REQUIRED)/a \
+            add_executable(healthcheck_node src/healthcheck.cpp)\n \
+            ament_target_dependencies(healthcheck_node rclcpp sensor_msgs)\n \
+            install(TARGETS healthcheck_node DESTINATION lib/${PROJECT_NAME})' \
+            /ros2_ws/src/healthcheck_pkg/CMakeLists.txt
+
+COPY ./healthcheck.cpp /ros2_ws/src/healthcheck_pkg/src/
+
 # Build
 WORKDIR /ros2_ws
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
@@ -192,9 +204,17 @@ RUN test -f "/ros2_ws/install/setup.bash" && echo "source /ros2_ws/install/setup
 # Git action version
 RUN echo $(cat /ros2_ws/src/zed-ros2-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
 
-# Setup environment variables
+COPY ./ros_entrypoint.sh /
+
+COPY ./healthcheck.sh /
+HEALTHCHECK --interval=7s --timeout=2s  --start-period=5s --retries=5 \
+    CMD ["/healthcheck.sh"]
+
+# Add Husarnet
 COPY --from=husarnet-dds-getter /usr/bin/husarnet-dds /usr/bin/husarnet-dds
 RUN chmod +x /usr/bin/husarnet-dds
+
+# Setup environment variables
 COPY ./ros_entrypoint.sh /ros_entrypoint.sh
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]

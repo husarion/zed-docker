@@ -9,12 +9,14 @@ The repository contains a GitHub Actions workflow for auto-deployment of built D
 ## Available Docker Images
 
 **ROS1:**
+
 - **`husarion/zed-desktop:noetic`** for desktop platform with CUDA (tested on platform with 11.7).
 - **`husarion/zed-desktop-cpu:noetic`** a simple demo version on the CPU, allowing you to check if the camera and IMU are working properly. Image dedicated to platforms with amd64 and arm64 architecture.
 - **`husarion/zed-jetson:noetic`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
 - **`husarion/zed-jetson:melodic`** for Jetson platform currently not supported - **Jetson Nano, TX2/TX2 NX, CUDA 10.2** (tested on Nano).
 
 **ROS2:**
+
 - **`husarion/zed-desktop:humble`** for desktop platform with CUDA (tested on platform with 11.7).
 - **`husarion/zed-desktop-cpu:humble`** a simple demo version on the CPU, allowing you to check if the camera and IMU are working properly. Image dedicated to platforms with amd64 and arm64 architecture.
 - **`husarion/zed-jetson:foxy`** for Jetson platform currently support - **Jetson Xavier, Orin AGX/NX/Nano, CUDA 11.4** (tested on Xavier AGX).
@@ -42,15 +44,17 @@ cd zed-docker/demo
 ```bash
 export ZED_IMAGE=<zed_image>
 ```
-Replace `<zed_image>` with appropriate Docker imagefrom below table.
 
-<div class="center-table">
+Replace `<zed_image>` with appropriate Docker image from below table.
+
+<div style="display: flex; justify-content: center;">
 
 | **Docker Image**                   |
 | ---------------------------------- |
 | husarion/zed-jetson:foxy           |
 | husarion/zed-desktop:humble        |
-| husarion/zed-desktop-cpu:humble    |
+
+</div>
 
 **3. Select the appropriate launch file**
 
@@ -60,7 +64,7 @@ export CAMERA_LAUNCH=<camera_launch>
 
 Replace `<camera_launch>` with appropriate launch file for your camera from below table.
 
-<div class="center-table">
+<div style="display: flex; justify-content: center;">
 
 | **Product name**  | **Launch file**         |
 | ----------------- | ----------------------- |
@@ -70,6 +74,8 @@ Replace `<camera_launch>` with appropriate launch file for your camera from belo
 | ZED 2i            | zed2i.launch.py         |
 | ZED X             | zedx.launch.py          |
 | ZED X Mini        | zedxm.launch.py         |
+
+</div>
 
 **4. Activate the Device**
 
@@ -93,6 +99,7 @@ docker compose up rviz
 **6. Configure RViz.**
 
 Add following topic to RViz:
+
 - RGB image topic: `/<camera_model>/zed_node/rgb/image_rect_color`
 - Point cloud topic: `/<camera_model>/zed_node/point_cloud/cloud_registered`
 

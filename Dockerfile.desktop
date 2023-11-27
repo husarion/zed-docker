@@ -9,6 +9,19 @@ ARG ZED_SDK_MAJOR=4
 ARG ZED_SDK_MINOR=0
 ARG ROS_DISTRO=humble
 
+### DOWNLOAD HUSARNET ###
+FROM ubuntu:20.04 AS husarnet-dds-getter
+
+ARG TARGETARCH
+ARG HUSARNET_DDS_RELEASE="v1.3.5"
+
+ENV HUSARNET_DDS_DEBUG=FALSE
+
+RUN apt update && apt install -y \
+        curl
+
+RUN curl -L https://github.com/husarnet/husarnet-dds/releases/download/${HUSARNET_DDS_RELEASE}/husarnet-dds-linux-${TARGETARCH} -o /usr/bin/husarnet-dds
+
 ### BUILD IMAGE ###
 FROM nvidia/cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-devel-ubuntu${UBUNTU_RELEASE_YEAR}.04 AS build
 
@@ -36,12 +49,12 @@ RUN echo "Europe/Paris" > /etc/localtime ; echo "CUDA Version ${CUDA_MAJOR}.${CU
     ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so && \
     rm ZED_SDK_Linux_Ubuntu.run && \
     rm -rf /var/lib/apt/lists/*
-    
+
 # ROS install
 ENV ROS_DISTRO $ROS_DISTRO
 RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
-    apt-get update && \ 
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     ros-$ROS_DISTRO-ros-core \
     && rm -rf /var/lib/apt/lists/*
@@ -75,6 +88,18 @@ RUN apt-get update && \
     rosdep update --rosdistro $ROS_DISTRO && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
+
+# Create health check package
+RUN cd src/ && \
+    source /opt/ros/$ROS_DISTRO/setup.bash && \
+    ros2 pkg create healthcheck_pkg --build-type ament_cmake --dependencies rclcpp sensor_msgs && \
+    sed -i '/find_package(sensor_msgs REQUIRED)/a \
+            add_executable(healthcheck_node src/healthcheck.cpp)\n \
+            ament_target_dependencies(healthcheck_node rclcpp sensor_msgs)\n \
+            install(TARGETS healthcheck_node DESTINATION lib/${PROJECT_NAME})' \
+            /ros2_ws/src/healthcheck_pkg/CMakeLists.txt
+
+COPY ./healthcheck.cpp /ros2_ws/src/healthcheck_pkg/src/
 
 # Build
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
@@ -112,12 +137,12 @@ RUN echo "Europe/Paris" > /etc/localtime ; echo "CUDA Version ${CUDA_MAJOR}.${CU
     ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so && \
     rm ZED_SDK_Linux_Ubuntu.run && \
     rm -rf /var/lib/apt/lists/*
-    
+
 # ROS install
 ENV ROS_DISTRO $ROS_DISTRO
 RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
-    apt-get update && \ 
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     ros-$ROS_DISTRO-ros-core \
     && rm -rf /var/lib/apt/lists/*
@@ -161,6 +186,16 @@ RUN apt-get update && apt-get install -y \
 
 # Git action version
 RUN echo $(cat /ros2_ws/src/zed-ros2-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
+
+COPY ./ros_entrypoint.sh /
+
+COPY ./healthcheck.sh /
+HEALTHCHECK --interval=7s --timeout=2s  --start-period=5s --retries=5 \
+    CMD ["/healthcheck.sh"]
+
+# Add Husarnet
+COPY --from=husarnet-dds-getter /usr/bin/husarnet-dds /usr/bin/husarnet-dds
+RUN chmod +x /usr/bin/husarnet-dds
 
 # Setup environment variables
 COPY ./ros_entrypoint.sh /ros_entrypoint.sh
