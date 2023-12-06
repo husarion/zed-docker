@@ -59,21 +59,21 @@ Replace `<zed_image>` with appropriate Docker image from below table.
 **3. Select the appropriate launch file**
 
 ```bash
-export CAMERA_LAUNCH=<camera_launch>
+export CAMERA_MODEL=<CAMERA_MODEL>
 ```
 
-Replace `<camera_launch>` with appropriate launch file for your camera from below table.
+Replace `<CAMERA_MODEL>` with appropriate launch file for your camera from below table.
 
 <div style="display: flex; justify-content: center;">
 
-| **Product name**  | **Launch file**         |
-| ----------------- | ----------------------- |
-| ZED               | zed.launch.py           |
-| ZED Mini          | zedm.launch.py          |
-| ZED 2             | zed2.launch.py          |
-| ZED 2i            | zed2i.launch.py         |
-| ZED X             | zedx.launch.py          |
-| ZED X Mini        | zedxm.launch.py         |
+| **Product Name**  | **Camera Model** |
+| ----------------- | ---------------- |
+| ZED               | zed              |
+| ZED Mini          | zedm             |
+| ZED 2             | zed2             |
+| ZED 2i            | zed2i            |
+| ZED X             | zedx             |
+| ZED X Mini        | zedxm            |
 
 </div>
 

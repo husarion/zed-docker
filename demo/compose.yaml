@@ -5,15 +5,15 @@ services:
     network_mode: host
     ipc: host
     runtime: nvidia
-    environment:
-      - CAMERA_LAUNCH=${CAMERA_LAUNCH:-err}
     volumes:
       - ./params:/ros2_ws/src/zed-ros-wrapper/zed_wrapper/params
       - /dev/shm:/dev/shm
       - /tmp/zed_ai/:/usr/local/zed/resources/ # Configuration files for quick start
       - /tmp/argus_socket:/tmp/argus_socket
     privileged: true
-    command: ros2 launch zed_wrapper ${CAMERA_LAUNCH}
+    command: >
+      ros2 launch zed_wrapper zed_camera.launch.py
+      camera_model:=${CAMERA_MODEL}
 
   rviz:
     image: husarion/rviz2:humble
