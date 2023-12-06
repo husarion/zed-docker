@@ -1,16 +1,15 @@
 
 # Reference: https://github.com/stereolabs/zed-ros2-wrapper/tree/master/docker
 
-ARG UBUNTU_RELEASE_YEAR=22
+ARG UBUNTU_RELEASE_YEAR=22.04
 ARG CUDA_MAJOR=11
-ARG CUDA_MINOR=7
-ARG CUDA_PATCH=1
+ARG CUDA_MINOR=8
 ARG ZED_SDK_MAJOR=4
 ARG ZED_SDK_MINOR=0
 ARG ROS_DISTRO=humble
 
 ### DOWNLOAD HUSARNET ###
-FROM ubuntu:20.04 AS husarnet-dds-getter
+FROM ubuntu:${UBUNTU_RELEASE_YEAR} AS husarnet-dds-getter
 
 ARG TARGETARCH
 ARG HUSARNET_DDS_RELEASE="v1.3.5"
@@ -23,12 +22,11 @@ RUN apt update && apt install -y \
 RUN curl -L https://github.com/husarnet/husarnet-dds/releases/download/${HUSARNET_DDS_RELEASE}/husarnet-dds-linux-${TARGETARCH} -o /usr/bin/husarnet-dds
 
 ### BUILD IMAGE ###
-FROM nvidia/cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-devel-ubuntu${UBUNTU_RELEASE_YEAR}.04 AS build
+FROM stereolabs/zed:${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}-devel-cuda${CUDA_MAJOR}.${CUDA_MINOR}-ubuntu${UBUNTU_RELEASE_YEAR} AS build
 
 ARG UBUNTU_RELEASE_YEAR
 ARG CUDA_MAJOR
 ARG CUDA_MINOR
-ARG CUDA_PATCH
 ARG ZED_SDK_MAJOR
 ARG ZED_SDK_MINOR
 ARG ROS_DISTRO
@@ -37,18 +35,6 @@ SHELL ["/bin/bash", "-c"]
 
 ENV NVIDIA_DRIVER_CAPABILITIES \
     ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
-
-# Setup the ZED SDK
-RUN echo "Europe/Paris" > /etc/localtime ; echo "CUDA Version ${CUDA_MAJOR}.${CUDA_MINOR}.0" > /usr/local/cuda/version.txt && \
-    apt-get update -y || true && \
-    apt-get install --no-install-recommends dialog bash-completion lsb-release wget less udev sudo  build-essential cmake zstd python3 python3-pip libpng-dev libgomp1 -y && \
-    python3 -m pip install --upgrade pip; python3 -m pip install numpy opencv-python-headless && \
-    wget -q -O ZED_SDK_Linux_Ubuntu.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}${CUDA_MINOR}/ubuntu${UBUNTU_RELEASE_YEAR} && \
-    chmod +x ZED_SDK_Linux_Ubuntu.run && \
-    ./ZED_SDK_Linux_Ubuntu.run -- silent skip_tools skip_cuda && \
-    ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so && \
-    rm ZED_SDK_Linux_Ubuntu.run && \
-    rm -rf /var/lib/apt/lists/*
 
 # ROS install
 ENV ROS_DISTRO $ROS_DISTRO
@@ -110,7 +96,7 @@ RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
     ' -DCMAKE_CXX_FLAGS="-Wl,--allow-shlib-undefined"'
 
 ### BUILD RUNTIME ### # Reduction from 13.4GB to 8.6GB
-FROM nvidia/cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-runtime-ubuntu${UBUNTU_RELEASE_YEAR}.04 AS runtime
+FROM stereolabs/zed:${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}-runtime-cuda${CUDA_MAJOR}.${CUDA_MINOR}-ubuntu${UBUNTU_RELEASE_YEAR} AS runtime
 
 COPY --from=build /ros2_ws /ros2_ws
 
@@ -125,18 +111,6 @@ SHELL ["/bin/bash", "-c"]
 
 ENV NVIDIA_DRIVER_CAPABILITIES \
     ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
-
-# Setup the ZED SDK
-RUN echo "Europe/Paris" > /etc/localtime ; echo "CUDA Version ${CUDA_MAJOR}.${CUDA_MINOR}.0" > /usr/local/cuda/version.txt && \
-    apt-get update -y || true && \
-    apt-get install --no-install-recommends dialog bash-completion lsb-release wget less udev sudo  build-essential cmake zstd python3 python3-pip libpng-dev libgomp1 -y && \
-    python3 -m pip install --upgrade pip; python3 -m pip install numpy opencv-python-headless && \
-    wget -q -O ZED_SDK_Linux_Ubuntu.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}${CUDA_MINOR}/ubuntu${UBUNTU_RELEASE_YEAR} && \
-    chmod +x ZED_SDK_Linux_Ubuntu.run && \
-    ./ZED_SDK_Linux_Ubuntu.run -- silent skip_tools skip_cuda && \
-    ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so && \
-    rm ZED_SDK_Linux_Ubuntu.run && \
-    rm -rf /var/lib/apt/lists/*
 
 # ROS install
 ENV ROS_DISTRO $ROS_DISTRO
