@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 
     std::cout << topic_name << std::endl;
     auto sub = node->create_subscription<sensor_msgs::msg::Image>(
-        topic_name, rclcpp::SensorDataQoS(), msg_callback);
+        topic_name, rclcpp::SensorDataQoS().keep_last(1), msg_callback);
 
     while (rclcpp::ok()) {
       rclcpp::spin_some(node);
