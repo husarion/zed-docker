@@ -35,7 +35,6 @@ int main(int argc, char *argv[]) {
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("healthcheck_node");
 
-  std::cout << topic_name << std::endl;
   auto sub = node->create_subscription<sensor_msgs::msg::Image>(
       "zed/zed_node/rgb/image_rect_color", rclcpp::SensorDataQoS().keep_last(1), msg_callback);
 
