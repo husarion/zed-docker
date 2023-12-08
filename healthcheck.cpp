@@ -34,25 +34,14 @@ void healthy_check() {
 int main(int argc, char *argv[]) {
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("healthcheck_node");
-  char *zed = std::getenv("CAMERA_LAUNCH");
 
-  if (zed) {
-    std::string zed_str(zed);
-    zed_str = zed_str.substr(0, zed_str.find('.'));
-    std::string topic_name = zed_str + "/zed_node/rgb/image_rect_color";
+  auto sub = node->create_subscription<sensor_msgs::msg::Image>(
+      "zed/zed_node/rgb/image_rect_color", rclcpp::SensorDataQoS().keep_last(1), msg_callback);
 
-    std::cout << topic_name << std::endl;
-    auto sub = node->create_subscription<sensor_msgs::msg::Image>(
-        topic_name, rclcpp::SensorDataQoS().keep_last(1), msg_callback);
-
-    while (rclcpp::ok()) {
-      rclcpp::spin_some(node);
-      healthy_check();
-      std::this_thread::sleep_for(LOOP_PERIOD);
-    }
-  } else {
-    std::cerr << "CAMERA_LAUNCH environment variable not set" << std::endl;
-    return 1;
+  while (rclcpp::ok()) {
+    rclcpp::spin_some(node);
+    healthy_check();
+    std::this_thread::sleep_for(LOOP_PERIOD);
   }
 
   return 0;
