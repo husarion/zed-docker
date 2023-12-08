@@ -56,13 +56,13 @@ Replace `<zed_image>` with appropriate Docker image from below table.
 
 </div>
 
-**3. Select the appropriate launch file**
+**3. Select the appropriate camera model**
 
 ```bash
-export CAMERA_MODEL=<CAMERA_MODEL>
+export CAMERA_MODEL=<camera_model>
 ```
 
-Replace `<CAMERA_MODEL>` with appropriate launch file for your camera from below table.
+Replace `<camera_model>` with appropriate camera model for your camera from below table.
 
 <div style="display: flex; justify-content: center;">
 
