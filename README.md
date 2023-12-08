@@ -62,7 +62,7 @@ Replace `<zed_image>` with appropriate Docker image from below table.
 export CAMERA_MODEL=<camera_model>
 ```
 
-Replace `<camera_model>` with appropriate camera model for your camera from below table.
+Replace `<camera_model>` with appropriate camera model from below table.
 
 <div style="display: flex; justify-content: center;">
 
