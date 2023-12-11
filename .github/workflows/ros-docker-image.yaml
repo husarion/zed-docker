@@ -11,7 +11,7 @@ on:
         options:
           - cpu
           - desktop
-          - jetson   
+          - jetson
       build_type:
         description: "Is it a \"development\" or a \"stable\" release?"
         required: true
@@ -37,6 +37,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 35840
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+
       - name: Set variables
         run: |
           if [[ "${{ inputs.dockerfile }}" == "desktop" ]]; then
