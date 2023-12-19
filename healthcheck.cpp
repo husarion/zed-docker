@@ -4,8 +4,8 @@
 
 using namespace std::chrono_literals;
 
-#define LOOP_PERIOD 2s
-#define MSG_VALID_TIME 5s
+#define LOOP_PERIOD 500ms
+#define MSG_VALID_TIME 2s
 
 std::chrono::steady_clock::time_point last_msg_time;
 
@@ -22,7 +22,7 @@ void healthy_check() {
   std::chrono::steady_clock::time_point current_time =
       std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed_time = current_time - last_msg_time;
-  bool is_msg_valid = elapsed_time.count() < MSG_VALID_TIME.count();
+  bool is_msg_valid = elapsed_time < MSG_VALID_TIME;
 
   if (is_msg_valid) {
     write_health_status("healthy");
@@ -33,7 +33,7 @@ void healthy_check() {
 
 int main(int argc, char *argv[]) {
   rclcpp::init(argc, argv);
-  auto node = rclcpp::Node::make_shared("healthcheck_node");
+  auto node = rclcpp::Node::make_shared("healthcheck_zed");
 
   auto sub = node->create_subscription<sensor_msgs::msg::Image>(
       "zed/zed_node/rgb/image_rect_color", rclcpp::SensorDataQoS().keep_last(1), msg_callback);
