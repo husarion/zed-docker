@@ -1,12 +1,12 @@
 services:
-        
+
   zed:
     image: husarion/zed-desktop-cpu:humble
     container_name: zed
     network_mode: host
     ipc: host
     volumes:
-      - /dev:/dev 
+      - /dev:/dev
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}

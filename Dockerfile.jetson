@@ -2,9 +2,6 @@
 
 ARG L4T_MAJOR=35
 ARG L4T_MINOR=3
-ARG CUDA_MAJOR=11
-ARG CUDA_MINOR=4
-ARG CUDA_PATCH=19
 ARG ZED_SDK_MAJOR=4
 ARG ZED_SDK_MINOR=0
 ARG ROS_DISTRO=foxy
@@ -23,13 +20,10 @@ RUN apt update && apt install -y \
 RUN curl -L https://github.com/husarnet/husarnet-dds/releases/download/${HUSARNET_DDS_RELEASE}/husarnet-dds-linux-${TARGETARCH} -o /usr/bin/husarnet-dds
 
 ### BUILD IMAGE ###
-FROM nvcr.io/nvidia/l4t-cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-devel AS build
+FROM stereolabs/zed:${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}-devel-l4t-r${L4T_MAJOR}.${L4T_MINOR} AS build
 
 ARG L4T_MAJOR
 ARG L4T_MINOR
-ARG CUDA_MAJOR
-ARG CUDA_MINOR
-ARG CUDA_PATCH
 ARG ZED_SDK_MAJOR
 ARG ZED_SDK_MINOR
 ARG ROS_DISTRO
@@ -38,20 +32,6 @@ SHELL ["/bin/bash", "-c"]
 
 ENV NVIDIA_DRIVER_CAPABILITIES \
  ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
-
-# Setup the ZED SDK
-RUN echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_release && \
-    apt-get update -y || true && \
-    apt-get install -y --no-install-recommends zstd wget less cmake curl gnupg2 \
-    build-essential python3 python3-pip python3-dev python3-setuptools libusb-1.0-0-dev -y && \
-    pip install protobuf && \
-    wget -q --no-check-certificate -O ZED_SDK_Linux.run \
-    https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/l4t${L4T_MAJOR}.${L4T_MINOR}/jetsons && \
-    chmod +x ZED_SDK_Linux.run && \
-    ./ZED_SDK_Linux.run -- silent skip_tools skip_cuda && \
-    rm -rf /usr/local/zed/resources/* && \
-    rm -rf ZED_SDK_Linux.run && \
-    rm -rf /var/lib/apt/lists/*
 
 # ROS install
 ENV ROS_DISTRO $ROS_DISTRO
@@ -98,6 +78,18 @@ RUN apt-get update && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
 
+# Create health check package
+RUN cd src/ && \
+    source /opt/ros/$ROS_DISTRO/setup.bash && \
+    ros2 pkg create healthcheck_pkg --build-type ament_cmake --dependencies rclcpp sensor_msgs && \
+    sed -i '/find_package(sensor_msgs REQUIRED)/a \
+            add_executable(healthcheck_node src/healthcheck.cpp)\n \
+            ament_target_dependencies(healthcheck_node rclcpp sensor_msgs)\n \
+            install(TARGETS healthcheck_node DESTINATION lib/${PROJECT_NAME})' \
+            /ros2_ws/src/healthcheck_pkg/CMakeLists.txt
+
+COPY ./healthcheck.cpp /ros2_ws/src/healthcheck_pkg/src/
+
 # Build
 WORKDIR /ros2_ws
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
@@ -109,13 +101,10 @@ RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
     ' --no-warn-unused-cli'
 
 ### RUNTIME IMAGE ### # Reduction from 6.1GB to 3.9GB
-FROM nvcr.io/nvidia/l4t-cuda:${CUDA_MAJOR}.${CUDA_MINOR}.${CUDA_PATCH}-runtime AS runtime
+FROM stereolabs/zed:${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}-runtime-l4t-r${L4T_MAJOR}.${L4T_MINOR} AS runtime
 
 ARG L4T_MAJOR
 ARG L4T_MINOR
-ARG CUDA_MAJOR
-ARG CUDA_MINOR
-ARG CUDA_PATCH
 ARG ZED_SDK_MAJOR
 ARG ZED_SDK_MINOR
 ARG ROS_DISTRO
@@ -126,20 +115,6 @@ SHELL ["/bin/bash", "-c"]
 
 ENV NVIDIA_DRIVER_CAPABILITIES \
  ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
-
-# Setup the ZED SDK
-RUN echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_release && \
-    apt-get update -y || true && \
-    apt-get install -y --no-install-recommends zstd wget less cmake curl gnupg2 \
-    build-essential python3 python3-pip python3-dev python3-setuptools libusb-1.0-0-dev -y && \
-    pip install protobuf && \
-    wget -q --no-check-certificate -O ZED_SDK_Linux.run \
-    https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/l4t${L4T_MAJOR}.${L4T_MINOR}/jetsons && \
-    chmod +x ZED_SDK_Linux.run && \
-    ./ZED_SDK_Linux.run -- silent skip_tools skip_cuda && \
-    rm -rf /usr/local/zed/resources/* && \
-    rm -rf ZED_SDK_Linux.run && \
-    rm -rf /var/lib/apt/lists/*
 
 # ROS install
 ENV ROS_DISTRO $ROS_DISTRO
@@ -192,9 +167,17 @@ RUN test -f "/ros2_ws/install/setup.bash" && echo "source /ros2_ws/install/setup
 # Git action version
 RUN echo $(cat /ros2_ws/src/zed-ros2-wrapper/zed_wrapper/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
 
-# Setup environment variables
+COPY ./ros_entrypoint.sh /
+
+COPY ./healthcheck.sh /
+HEALTHCHECK --interval=2s --timeout=1s --start-period=20s --retries=1 \
+    CMD ["/healthcheck.sh"]
+
+# Add Husarnet
 COPY --from=husarnet-dds-getter /usr/bin/husarnet-dds /usr/bin/husarnet-dds
 RUN chmod +x /usr/bin/husarnet-dds
+
+# Setup environment variables
 COPY ./ros_entrypoint.sh /ros_entrypoint.sh
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]

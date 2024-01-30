@@ -26,7 +26,8 @@ RUN apt-get update && \
 
 # Build
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
-    colcon build
+    colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release && \
+    rm -rf build log src
 
 # Git action version
 RUN echo $(cat /ros2_ws/src/zed_cpu/package.xml | grep '<version>' | sed -r 's/.*<version>([0-9]+.[0-9]+.[0-9]+)<\/version>/\1/g') >> /version.txt
