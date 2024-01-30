@@ -8,10 +8,14 @@ services:
     volumes:
       - ./params:/ros2_ws/src/zed-ros-wrapper/zed_wrapper/params
       - /dev/shm:/dev/shm
-      - /tmp/zed_ai/:/usr/local/zed/resources/
-      - /tmp/argus_socket:/tmp/argus_socket
+      - /tmp:/tmp
+      - /var/nvidia/nvcam/settings/:/var/nvidia/nvcam/settings/
+      - /etc/systemd/system/zed_x_daemon.service:/etc/systemd/system/zed_x_daemon.service
+
     privileged: true
-    command: ros2 launch zed_wrapper ${CAMERA_MODEL}.launch.py
+    command: >
+      ros2 launch zed_wrapper zed_camera.launch.py
+      camera_model:=${CAMERA_MODEL}
 
   rviz:
     image: husarion/rviz2:humble
