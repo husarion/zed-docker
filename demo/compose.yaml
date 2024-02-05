@@ -8,6 +8,7 @@ services:
     volumes:
       - ./params:/ros2_ws/src/zed-ros-wrapper/zed_wrapper/params
       - /dev/shm:/dev/shm
+      - ./zed_ai/:/usr/local/zed/resources/ # Save configuration files for quick start
       - /tmp:/tmp
       - /var/nvidia/nvcam/settings/:/var/nvidia/nvcam/settings/
       - /etc/systemd/system/zed_x_daemon.service:/etc/systemd/system/zed_x_daemon.service
