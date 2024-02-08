@@ -106,8 +106,6 @@ ARG ZED_SDK_MAJOR
 ARG ZED_SDK_MINOR
 ARG ROS_DISTRO
 
-COPY --from=build /ros2_ws /ros2_ws
-
 SHELL ["/bin/bash", "-c"]
 
 ENV NVIDIA_DRIVER_CAPABILITIES \
@@ -146,6 +144,7 @@ RUN apt-get update || true && \
     rm -rf /var/lib/apt/lists/*
 
 # Check dependencies
+COPY --from=build /ros2_ws /ros2_ws
 WORKDIR /ros2_ws
 RUN apt-get update && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
