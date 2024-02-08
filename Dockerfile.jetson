@@ -6,19 +6,6 @@ ARG ZED_SDK_MAJOR=4
 ARG ZED_SDK_MINOR=0
 ARG ROS_DISTRO=foxy
 
-### DOWNLOAD HUSARNET ###
-FROM ubuntu:20.04 AS husarnet-dds-getter
-
-ARG TARGETARCH
-ARG HUSARNET_DDS_RELEASE="v1.3.5"
-
-ENV HUSARNET_DDS_DEBUG=FALSE
-
-RUN apt update && apt install -y \
-        curl
-
-RUN curl -L https://github.com/husarnet/husarnet-dds/releases/download/${HUSARNET_DDS_RELEASE}/husarnet-dds-linux-${TARGETARCH} -o /usr/bin/husarnet-dds
-
 ### BUILD IMAGE ###
 FROM stereolabs/zed:${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}-devel-l4t-r${L4T_MAJOR}.${L4T_MINOR} AS build
 
@@ -132,6 +119,7 @@ RUN apt-get update || true && \
         ros-${ROS_DISTRO}-xacro \
         ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
         build-essential \
+        curl \
         python3-colcon-mixin \
         python3-flake8-docstrings \
         python3-pip \
@@ -165,8 +153,11 @@ COPY ./healthcheck.sh /
 HEALTHCHECK --interval=2s --timeout=1s --start-period=20s --retries=1 \
     CMD ["/healthcheck.sh"]
 
-# Add Husarnet
-COPY --from=husarnet-dds-getter /usr/bin/husarnet-dds /usr/bin/husarnet-dds
+# Download Husarnet
+ARG TARGETARCH
+ARG HUSARNET_DDS_RELEASE="v1.3.5"
+ENV HUSARNET_DDS_DEBUG=FALSE
+RUN curl -L https://github.com/husarnet/husarnet-dds/releases/download/${HUSARNET_DDS_RELEASE}/husarnet-dds-linux-${TARGETARCH} -o /usr/bin/husarnet-dds
 RUN chmod +x /usr/bin/husarnet-dds
 
 # Setup environment variables
