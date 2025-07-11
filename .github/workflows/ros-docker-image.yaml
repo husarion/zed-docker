@@ -62,7 +62,7 @@ jobs:
             echo "PLATFORM=linux/amd64, linux/arm64" >> $GITHUB_ENV
           elif [[ "${{ inputs.dockerfile }}" == "jetson" ]]; then
             echo "REPO_NAME=zed-jetson" >> $GITHUB_ENV
-            echo "ROS_DISTRO=foxy" >> $GITHUB_ENV
+            echo "ROS_DISTRO=humble" >> $GITHUB_ENV
             echo "PLATFORM=linux/arm64" >> $GITHUB_ENV
           fi
 
