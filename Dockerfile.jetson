@@ -56,33 +56,34 @@ RUN apt-get update || true && \
 # Check dependencies
 WORKDIR /ros2_ws
 RUN apt-get update && \
-    git clone --recursive https://github.com/stereolabs/zed-ros2-wrapper.git src/zed-ros2-wrapper && \
+    git clone -b humble-v4.2.5 --recursive https://github.com/stereolabs/zed-ros2-wrapper.git src/zed-ros2-wrapper && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
     rosdep init && \
     rosdep update --rosdistro $ROS_DISTRO && \
     rosdep install --from-paths src -y -i && \
     rm -rf /var/lib/apt/lists/*
 
-# Create health check package
-RUN cd src/ && \
-    source /opt/ros/$ROS_DISTRO/setup.bash && \
-    ros2 pkg create healthcheck_pkg --build-type ament_cmake --dependencies rclcpp sensor_msgs && \
-    sed -i '/find_package(sensor_msgs REQUIRED)/a \
-            add_executable(healthcheck_node src/healthcheck.cpp)\n \
-            ament_target_dependencies(healthcheck_node rclcpp sensor_msgs)\n \
-            install(TARGETS healthcheck_node DESTINATION lib/${PROJECT_NAME})' \
-            /ros2_ws/src/healthcheck_pkg/CMakeLists.txt
+# # Create health check package
+# RUN cd src/ && \
+#     source /opt/ros/$ROS_DISTRO/setup.bash && \
+#     ros2 pkg create healthcheck_pkg --build-type ament_cmake --dependencies rclcpp sensor_msgs && \
+#     sed -i '/find_package(sensor_msgs REQUIRED)/a \
+#             add_executable(healthcheck_node src/healthcheck.cpp)\n \
+#             ament_target_dependencies(healthcheck_node rclcpp sensor_msgs)\n \
+#             install(TARGETS healthcheck_node DESTINATION lib/${PROJECT_NAME})' \
+#             /ros2_ws/src/healthcheck_pkg/CMakeLists.txt
 
-COPY ./healthcheck.cpp /ros2_ws/src/healthcheck_pkg/src/
+# COPY ./healthcheck.cpp /ros2_ws/src/healthcheck_pkg/src/
 
 # Build
 WORKDIR /ros2_ws
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
-    colcon build --base-paths src \
-        --cmake-args ' -DCMAKE_BUILD_TYPE=Release' \
-        ' -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs' \
-        ' -DCMAKE_CXX_FLAGS="-Wl,--allow-shlib-undefined"' \
-        ' --no-warn-unused-cli'
+    colcon build --symlink-install --cmake-args=-DCMAKE_BUILD_TYPE=Release --parallel-workers $(nproc)
+    # colcon build --base-paths src \
+    #     --cmake-args ' -DCMAKE_BUILD_TYPE=Release' \
+    #     ' -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs' \
+    #     ' -DCMAKE_CXX_FLAGS="-Wl,--allow-shlib-undefined"' \
+    #     ' --no-warn-unused-cli'
 
 ### RUNTIME IMAGE ### # Reduction from 6.1GB to 3.9GB
 FROM stereolabs/zed:${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}-runtime-jetson-jp${JP_MAJOR}.${JP_MINOR}.${JP_PATCH} AS runtime

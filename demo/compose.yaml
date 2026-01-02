@@ -1,6 +1,10 @@
 services:
   zed:
-    image: ${ZED_IMAGE}
+    # image: ${ZED_IMAGE}
+    build:
+      context: ..
+      dockerfile: Dockerfile.jetson
+      network: host
     container_name: zed
     network_mode: host
     ipc: host
@@ -14,6 +18,7 @@ services:
       - /etc/systemd/system/zed_x_daemon.service:/etc/systemd/system/zed_x_daemon.service
 
     privileged: true
+    # command: tail -f /dev/null
     command: >
       ros2 launch zed_wrapper zed_camera.launch.py
       camera_model:=${CAMERA_MODEL}

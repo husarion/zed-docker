@@ -1,0 +1,15 @@
+build:
+    #!/bin/bash
+    export ROS_DISTRO=humble
+    export CAMERA_MODEL=zedx
+    export DISPLAY=:0
+    docker compose build
+
+run:
+    #!/bin/bash
+    export ROS_DISTRO=humble
+    export CAMERA_MODEL=zedx
+    export DISPLAY=:0
+    xhost local:root
+
+    docker compose up
